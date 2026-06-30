@@ -32,9 +32,9 @@ Page({
     }
   },
 
-  // 切换展开/折叠
+  // 切换展开/折叠（目录和列表标题共用）
   toggleSection(e) {
-    const index = e.currentTarget.dataset.index
+    const index = parseInt(e.currentTarget.dataset.index)
     this.setData({
       expandedIndex: this.data.expandedIndex === index ? -1 : index
     })
@@ -46,7 +46,6 @@ Page({
     const index = this.data.sections.findIndex(s => s.id === id)
     if (index >= 0) {
       this.setData({ expandedIndex: index })
-      // 使用 wx.createSelectorQuery 滚动到对应位置
       wx.pageScrollTo({
         selector: '#section-' + id,
         duration: 300

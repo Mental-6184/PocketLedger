@@ -31,7 +31,7 @@
       </view>
       <text class="section-arrow {{expandedIndex === 0 ? 'expanded' : ''}}">›</text>
     </view>
-    <view class="section-body" wx:if="{{expandedIndex === 0}}">
+    <view class="section-body" hidden="{{expandedIndex !== 0}}">
       <view class="step-list">
         <view class="step-item">
           <text class="step-num">1</text>
@@ -71,7 +71,7 @@
       </view>
       <text class="section-arrow {{expandedIndex === 1 ? 'expanded' : ''}}">›</text>
     </view>
-    <view class="section-body" wx:if="{{expandedIndex === 1}}">
+    <view class="section-body" hidden="{{expandedIndex !== 1}}">
       <view class="info-block">
         <text class="info-title">基本流程</text>
         <text class="info-text">选择「支出」或「收入」→ 选择分类 → 输入金额 → 选择日期 → 保存</text>
@@ -100,7 +100,7 @@
       </view>
       <text class="section-arrow {{expandedIndex === 2 ? 'expanded' : ''}}">›</text>
     </view>
-    <view class="section-body" wx:if="{{expandedIndex === 2}}">
+    <view class="section-body" hidden="{{expandedIndex !== 2}}">
       <view class="info-block">
         <text class="info-title">按月浏览</text>
         <text class="info-text">点击顶部月份切换按钮，或点击月份文字打开日期选择器，快速跳转到目标月份。</text>
@@ -125,7 +125,7 @@
       </view>
       <text class="section-arrow {{expandedIndex === 3 ? 'expanded' : ''}}">›</text>
     </view>
-    <view class="section-body" wx:if="{{expandedIndex === 3}}">
+    <view class="section-body" hidden="{{expandedIndex !== 3}}">
       <view class="info-block">
         <text class="info-title">设置预算</text>
         <text class="info-text">进入「设置」→「每月预算」，输入您每月的消费预算金额。</text>
@@ -150,7 +150,7 @@
       </view>
       <text class="section-arrow {{expandedIndex === 4 ? 'expanded' : ''}}">›</text>
     </view>
-    <view class="section-body" wx:if="{{expandedIndex === 4}}">
+    <view class="section-body" hidden="{{expandedIndex !== 4}}">
       <view class="info-block">
         <text class="info-title">添加订阅</text>
         <text class="info-text">进入「设置」→「订阅管理」→ 点击右下角 + 按钮。填写名称、金额、扣费周期、下次扣费日期等信息。</text>
@@ -179,7 +179,7 @@
       </view>
       <text class="section-arrow {{expandedIndex === 5 ? 'expanded' : ''}}">›</text>
     </view>
-    <view class="section-body" wx:if="{{expandedIndex === 5}}">
+    <view class="section-body" hidden="{{expandedIndex !== 5}}">
       <view class="info-block">
         <text class="info-title">日历视图</text>
         <text class="info-text">首页中部的「扣款日历」卡片，用小圆点标记有订阅扣费的日期：\n• 红色小圆点：当天有 1 笔扣款\n• 橙色宽圆点：当天有多笔扣款</text>
@@ -204,7 +204,7 @@
       </view>
       <text class="section-arrow {{expandedIndex === 6 ? 'expanded' : ''}}">›</text>
     </view>
-    <view class="section-body" wx:if="{{expandedIndex === 6}}">
+    <view class="section-body" hidden="{{expandedIndex !== 6}}">
       <view class="info-block">
         <text class="info-title">选择币种</text>
         <text class="info-text">添加订阅时，点击金额行左侧的币种标签，可选择：人民币(CNY)、美元(USD)、欧元(EUR)、英镑(GBP)、日元(JPY)、港币(HKD)、韩元(KRW)。</text>
@@ -229,7 +229,7 @@
       </view>
       <text class="section-arrow {{expandedIndex === 7 ? 'expanded' : ''}}">›</text>
     </view>
-    <view class="section-body" wx:if="{{expandedIndex === 7}}">
+    <view class="section-body" hidden="{{expandedIndex !== 7}}">
       <view class="info-block">
         <text class="info-title">问题背景</text>
         <text class="info-text">一次性支付 200 元/年的订阅，如果全部计入当月，会导致该月支出图表异常膨胀，无法反映真实消费水平。</text>
@@ -254,7 +254,7 @@
       </view>
       <text class="section-arrow {{expandedIndex === 8 ? 'expanded' : ''}}">›</text>
     </view>
-    <view class="section-body" wx:if="{{expandedIndex === 8}}">
+    <view class="section-body" hidden="{{expandedIndex !== 8}}">
       <view class="info-block">
         <text class="info-title">什么是账户</text>
         <text class="info-text">账户代表您的钱放在哪里：微信钱包、支付宝、储蓄卡、信用卡、现金等。通过账户管理，您可以清楚知道"钱在哪里"。</text>
@@ -283,7 +283,7 @@
       </view>
       <text class="section-arrow {{expandedIndex === 9 ? 'expanded' : ''}}">›</text>
     </view>
-    <view class="section-body" wx:if="{{expandedIndex === 9}}">
+    <view class="section-body" hidden="{{expandedIndex !== 9}}">
       <view class="info-block">
         <text class="info-title">问题场景</text>
         <text class="info-text">• 帮同事垫付了饭钱，等他转账报销\n• 网购退货，商家退款\n• 出差垫付费用，等公司报销\n\n这些场景如果简单记为"收入"，会虚增真实收入，导致收支统计失真。</text>
@@ -312,7 +312,7 @@
       </view>
       <text class="section-arrow {{expandedIndex === 10 ? 'expanded' : ''}}">›</text>
     </view>
-    <view class="section-body" wx:if="{{expandedIndex === 10}}">
+    <view class="section-body" hidden="{{expandedIndex !== 10}}">
       <view class="info-block">
         <text class="info-title">月度概览</text>
         <text class="info-text">显示当月收入、支出、结余，以及支出占收入的百分比（消费健康度）。</text>
@@ -345,7 +345,7 @@
       </view>
       <text class="section-arrow {{expandedIndex === 11 ? 'expanded' : ''}}">›</text>
     </view>
-    <view class="section-body" wx:if="{{expandedIndex === 11}}">
+    <view class="section-body" hidden="{{expandedIndex !== 11}}">
       <view class="info-block">
         <text class="info-title">导出数据</text>
         <text class="info-text">进入「设置」→「导出数据」，所有记录、订阅、账户、设置将导出为 JSON 格式并复制到剪贴板。您可以粘贴保存到备忘录或文件中作为备份。</text>
