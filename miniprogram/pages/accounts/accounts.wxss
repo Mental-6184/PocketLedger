@@ -5,7 +5,6 @@
 .container {
   padding: 32rpx;
   padding-bottom: 120rpx;
-  animation: fadeIn 0.3s ease-out;
 }
 
 /* 总资产概览 */

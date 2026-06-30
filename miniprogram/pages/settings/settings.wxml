@@ -1,22 +1,43 @@
 <!--
   设置页 - 大通栏卡片设计
 -->
-<view class="container">
+<view class="container page-fade-in">
   <!-- 偏好设置 + 功能 - 合并为一个大卡片 -->
   <view class="section-label">偏好设置</view>
-  <view class="settings-card card anim-fade-in-up">
-    <view class="setting-item">
-      <view class="setting-left">
-        <view class="setting-icon-box" style="background: #E8F6F4;">
-          <text class="si">💰</text>
-        </view>
-        <text class="setting-name">每月预算</text>
+
+  <!-- 每月预算 - 独立卡片 -->
+  <view class="budget-card card anim-fade-in-up">
+    <view class="budget-header">
+      <view class="budget-title-row">
+        <view class="budget-icon">💰</view>
+        <text class="budget-title">每月预算</text>
       </view>
-      <view class="budget-input">
-        <text class="budget-currency">{{currency}}</text>
-        <input class="budget-field" type="digit" value="{{budgetInput}}" bindinput="onBudgetInput" placeholder="未设置" bindblur="saveBudget" />
+      <view class="budget-status {{budgetStatusClass}}">
+        <text class="budget-status-text">{{budgetStatusText}}</text>
       </view>
     </view>
+
+    <view class="budget-amount-row">
+      <text class="budget-currency-symbol">{{currency}}</text>
+      <input class="budget-amount-input" type="digit" value="{{budgetInput}}" bindinput="onBudgetInput" placeholder="0" bindblur="saveBudget" placeholder-style="color: var(--color-text-light);" />
+    </view>
+
+    <view class="budget-progress-section" wx:if="{{budget > 0}}">
+      <view class="budget-progress-bar">
+        <view class="budget-progress-fill" style="width: {{budgetProgress}}%; background: {{budgetProgressColor}};"></view>
+      </view>
+      <view class="budget-progress-info">
+        <text class="budget-spent">已支出 {{currency}}{{monthlySpent}}</text>
+        <text class="budget-remaining">剩余 {{currency}}{{budgetRemaining}}</text>
+      </view>
+    </view>
+
+    <view class="budget-hint" wx:if="{{budget === 0}}">
+      <text class="budget-hint-text">设置每月预算，轻松掌控开支</text>
+    </view>
+  </view>
+
+  <view class="settings-card card anim-fade-in-up" style="animation-delay: 0.02s;">
     <view class="setting-divider-compact"></view>
     <view class="setting-item" bindtap="onCurrencyTap">
       <view class="setting-left">

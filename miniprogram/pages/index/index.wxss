@@ -5,7 +5,6 @@
 .container {
   padding: 32rpx;
   padding-bottom: 40rpx;
-  animation: fadeIn 0.3s ease-out;
 }
 
 /* 常用分类快捷入口 */
@@ -28,7 +27,7 @@
   padding: 20rpx 0;
   border-radius: var(--radius-lg);
   background: var(--color-bg);
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 .quick-category-item:active {
@@ -130,7 +129,7 @@
   color: var(--color-text);
   background: var(--color-bg);
   border-radius: var(--radius-md);
-  transition: all 0.15s ease;
+  transition: transform 0.15s ease, background-color 0.15s ease;
 }
 
 .quick-key:active {

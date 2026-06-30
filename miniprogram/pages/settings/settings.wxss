@@ -4,7 +4,6 @@
 
 .container {
   padding: 24rpx 32rpx;
-  animation: fadeIn 0.3s ease-out;
 }
 
 /* 分组标签 */
@@ -111,35 +110,129 @@
   margin-left: 120rpx;
 }
 
-/* 预算输入 */
-.budget-input {
+/* 预算卡片 - 独立设计 */
+.budget-card {
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+  background: linear-gradient(135deg, #f8fffe 0%, #f0faf8 100%);
+  border: 2rpx solid rgba(42, 161, 152, 0.15);
+}
+
+.budget-header {
   display: flex;
   align-items: center;
-  background: var(--color-bg);
-  border-radius: var(--radius-md);
-  border: 2rpx solid var(--color-border);
-  padding: 0 20rpx;
-  height: 64rpx;
-  width: 240rpx;
-  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
 }
 
-.budget-input:focus-within {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 4rpx rgba(42, 161, 152, 0.12);
+.budget-title-row {
+  display: flex;
+  align-items: center;
 }
 
-.budget-currency {
-  font-size: 26rpx;
-  color: var(--color-text-secondary);
-  margin-right: 8rpx;
+.budget-icon {
+  font-size: 40rpx;
+  margin-right: 16rpx;
 }
 
-.budget-field {
+.budget-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.budget-status {
+  padding: 8rpx 20rpx;
+  border-radius: 32rpx;
+  font-size: 22rpx;
+  font-weight: 500;
+}
+
+.budget-status.safe {
+  background: rgba(42, 161, 152, 0.12);
+  color: #2aa198;
+}
+
+.budget-status.warning {
+  background: rgba(255, 183, 77, 0.15);
+  color: #f59e0b;
+}
+
+.budget-status.over {
+  background: rgba(212, 96, 90, 0.12);
+  color: #d4605a;
+}
+
+.budget-status.none {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--color-text-light);
+}
+
+.budget-amount-row {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 24rpx;
+}
+
+.budget-currency-symbol {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-right: 12rpx;
+}
+
+.budget-amount-input {
+  font-size: 72rpx;
+  font-weight: 700;
+  color: var(--color-text);
   flex: 1;
-  font-size: 28rpx;
-  height: 64rpx;
-  text-align: right;
+  height: 100rpx;
+  line-height: 100rpx;
+}
+
+.budget-progress-section {
+  margin-top: 8rpx;
+}
+
+.budget-progress-bar {
+  height: 16rpx;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 8rpx;
+  overflow: hidden;
+  margin-bottom: 16rpx;
+}
+
+.budget-progress-fill {
+  height: 100%;
+  border-radius: 8rpx;
+  transition: width 0.6s ease, background-color 0.3s ease;
+}
+
+.budget-progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.budget-spent {
+  font-size: 24rpx;
+  color: var(--color-text-secondary);
+}
+
+.budget-remaining {
+  font-size: 24rpx;
+  font-weight: 500;
+  color: var(--color-primary);
+}
+
+.budget-hint {
+  padding: 16rpx 0 8rpx;
+}
+
+.budget-hint-text {
+  font-size: 24rpx;
+  color: var(--color-text-light);
+  line-height: 1.6;
 }
 
 /* 货币选择面板 */
@@ -167,11 +260,6 @@
   will-change: transform;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-}
-
-@keyframes slideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
 }
 
 .currency-title {

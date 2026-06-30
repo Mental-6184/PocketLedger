@@ -4,7 +4,6 @@
 
 .container {
   padding: 24rpx 32rpx;
-  animation: fadeIn 0.3s ease-out;
 }
 
 /* 月份选择器 */
@@ -22,7 +21,7 @@
   color: var(--color-text-secondary);
   padding: 12rpx 16rpx;
   border-radius: var(--radius-sm);
-  transition: background 0.2s;
+  transition: background-color 0.2s ease;
 }
 
 .month-arrow:active {

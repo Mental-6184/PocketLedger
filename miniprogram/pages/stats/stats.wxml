@@ -1,7 +1,7 @@
 <!--
   统计页 - 月度概览、分类占比、趋势图
 -->
-<view class="container">
+<view class="container page-fade-in">
   <!-- 月份选择 -->
   <view class="month-selector anim-fade-in-up">
     <view class="month-arrow" bindtap="prevMonth">◀</view>

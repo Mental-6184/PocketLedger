@@ -8,13 +8,20 @@ const { generateExcel, generateJsonBackup, exportToFile } = require('../../utils
 Page({
   data: {
     budgetInput: '',
+    budget: 0,
     currency: '¥',
     currencyOptions: ['¥', '$', '€', '£', '₩', '₹'],
     recordCount: 0,
     subCount: 0,
     accountCount: 0,
     showCurrency: false,
-    showExportSheet: false
+    showExportSheet: false,
+    monthlySpent: '0.00',
+    budgetRemaining: '0.00',
+    budgetProgress: 0,
+    budgetProgressColor: '#2aa198',
+    budgetStatusClass: 'none',
+    budgetStatusText: '未设置'
   },
 
   onShow() {
@@ -27,13 +34,59 @@ Page({
     const subs = storage.getSubscriptions()
     const accounts = storage.getAccounts()
 
+    const budget = settings.monthlyBudget || 0
+    const monthlySpent = this.calcMonthlySpent(records)
+    const budgetRemaining = Math.max(0, budget - monthlySpent)
+    const budgetProgress = budget > 0 ? Math.min(100, (monthlySpent / budget) * 100) : 0
+
+    let budgetProgressColor = '#2aa198'
+    let budgetStatusClass = 'none'
+    let budgetStatusText = '未设置'
+
+    if (budget > 0) {
+      if (budgetProgress < 70) {
+        budgetProgressColor = '#2aa198'
+        budgetStatusClass = 'safe'
+        budgetStatusText = '正常'
+      } else if (budgetProgress < 100) {
+        budgetProgressColor = '#f59e0b'
+        budgetStatusClass = 'warning'
+        budgetStatusText = '接近上限'
+      } else {
+        budgetProgressColor = '#d4605a'
+        budgetStatusClass = 'over'
+        budgetStatusText = '已超支'
+      }
+    }
+
     this.setData({
-      budgetInput: settings.monthlyBudget ? String(settings.monthlyBudget) : '',
+      budgetInput: budget > 0 ? String(budget) : '',
+      budget,
       currency: settings.currency || '¥',
       recordCount: records.length,
       subCount: subs.length,
-      accountCount: accounts.length
+      accountCount: accounts.length,
+      monthlySpent: monthlySpent.toFixed(2),
+      budgetRemaining: budgetRemaining.toFixed(2),
+      budgetProgress,
+      budgetProgressColor,
+      budgetStatusClass,
+      budgetStatusText
     })
+  },
+
+  calcMonthlySpent(records) {
+    const now = new Date()
+    const currentYear = now.getFullYear()
+    const currentMonth = now.getMonth()
+
+    return records
+      .filter(r => {
+        if (r.type !== 'expense') return false
+        const d = new Date(r.date)
+        return d.getFullYear() === currentYear && d.getMonth() === currentMonth
+      })
+      .reduce((sum, r) => sum + Math.abs(r.amount), 0)
   },
 
   onBudgetInput(e) {
@@ -45,6 +98,7 @@ Page({
   saveBudget() {
     const budget = parseFloat(this.data.budgetInput) || 0
     storage.updateSettings({ monthlyBudget: budget })
+    this.loadSettings() // 重新计算预算状态
     if (budget > 0) {
       wx.showToast({ title: '预算已保存', icon: 'success' })
     }

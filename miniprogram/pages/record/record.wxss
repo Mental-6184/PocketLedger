@@ -20,7 +20,6 @@
 .scroll-content {
   padding: 32rpx;
   padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
-  animation: fadeIn 0.3s ease-out;
   min-height: 100%;
 }
 
@@ -51,7 +50,7 @@
   font-weight: 500;
   color: var(--color-text-secondary);
   border-radius: var(--radius-md);
-  transition: all 0.25s ease;
+  transition: background-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
   position: relative;
   z-index: 1;
   -webkit-font-smoothing: antialiased;
@@ -102,7 +101,7 @@
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .amount-display.active {
@@ -242,7 +241,7 @@
   justify-content: space-between;
   padding: 24rpx 16rpx;
   border-radius: var(--radius-md);
-  transition: background 0.15s;
+  transition: background-color 0.15s ease;
 }
 
 .account-option:active {
@@ -408,7 +407,7 @@
     0 4rpx 12rpx rgba(0, 0, 0, 0.04),
     0 1rpx 3rpx rgba(0, 0, 0, 0.02),
     inset 0 1rpx 0 rgba(255, 255, 255, 0.8);
-  transition: all 0.25s ease;
+  transition: transform 0.25s ease, background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
   animation: scaleIn 0.2s ease-out both;
   will-change: transform, opacity;
   backface-visibility: hidden;
@@ -472,7 +471,7 @@
 .cat-name {
   font-size: 22rpx;
   color: var(--color-text-secondary);
-  transition: all 0.25s ease;
+  transition: color 0.25s ease, font-weight 0.25s ease;
   font-weight: 400;
 }
 
@@ -552,7 +551,7 @@
   color: var(--color-primary);
   background: rgba(255, 255, 255, 0.8);
   border-radius: var(--radius-md);
-  transition: all 0.15s ease;
+  transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease;
 }
 
 .quick-amount-btn:active {
@@ -580,7 +579,7 @@
   background: #FFFFFF;
   border-radius: var(--radius-md);
   box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.04);
-  transition: all 0.1s ease;
+  transition: transform 0.1s ease, background-color 0.1s ease, box-shadow 0.1s ease;
 }
 
 .keyboard-key:active {

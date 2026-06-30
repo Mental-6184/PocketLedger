@@ -2,7 +2,7 @@
   首页 - 口袋账本
   展示月度概览、预算进度、常用分类、最近记录、即将到期订阅
 -->
-<view class="container">
+<view class="container page-fade-in">
   <!-- 顶部月度概览 -->
   <view class="overview-card card anim-fade-in-up">
     <view class="overview-header flex-between">

@@ -58,7 +58,7 @@
   padding: 14rpx 16rpx;
   background: var(--color-bg);
   border-radius: var(--radius-md);
-  transition: all 0.15s;
+  transition: background-color 0.15s ease, transform 0.15s ease;
 }
 
 .toc-item:active {
@@ -95,7 +95,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 28rpx 24rpx;
-  transition: background 0.15s;
+  transition: background-color 0.15s ease;
 }
 
 .section-header:active {

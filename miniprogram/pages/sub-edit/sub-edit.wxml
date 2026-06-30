@@ -1,7 +1,7 @@
 <!--
   订阅编辑页 - 新增/编辑订阅项目
 -->
-<view class="container">
+<view class="container page-fade-in">
   <view class="card">
     <view class="form-group">
       <text class="form-label">订阅名称</text>

@@ -1,7 +1,7 @@
 <!--
   订阅管理页 - 订阅列表、到期提醒
 -->
-<view class="container">
+<view class="container page-fade-in">
   <!-- 概览 -->
   <view class="overview card anim-fade-in-up" wx:if="{{subs.length > 0}}">
     <view class="flex-between">

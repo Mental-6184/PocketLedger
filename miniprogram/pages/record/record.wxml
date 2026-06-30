@@ -5,7 +5,7 @@
 <view class="page-wrapper">
   <!-- 可滚动内容区域 -->
   <scroll-view class="page-scroll" scroll-y enhanced show-scrollbar="{{showKeyboard}}">
-    <view class="scroll-content" bindtap="hideKeyboard">
+    <view class="scroll-content page-fade-in" bindtap="hideKeyboard">
       <!-- 类型切换 - 磨砂白底滑块 -->
       <view class="type-switch" catchtap="preventBubble">
         <view class="type-btn {{form.type === 'expense' ? 'active expense' : ''}}" bindtap="setType" data-type="expense">支出</view>

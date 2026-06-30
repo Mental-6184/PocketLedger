@@ -1,7 +1,7 @@
 <!--
   记账列表页 - 支持月份筛选、分类筛选、删除
 -->
-<view class="container">
+<view class="container page-fade-in">
   <!-- 筛选栏 -->
   <view class="filter-bar card anim-fade-in-up">
     <view class="filter-row flex-between">
