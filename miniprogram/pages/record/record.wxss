@@ -562,13 +562,12 @@
 
 /* 数字键盘网格 */
 .keyboard-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 10rpx;
 }
 
 .keyboard-key {
-  width: calc(33.33% - 7rpx);
   height: 80rpx;
   display: flex;
   align-items: center;
