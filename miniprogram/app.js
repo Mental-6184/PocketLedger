@@ -11,9 +11,22 @@ App({
     if (!wx.getStorageSync('pocket_settings')) {
       storage.saveSettings(settings)
     }
+
+    // 首次启动检测 — 标记需要显示使用方法引导
+    if (!wx.getStorageSync('pocket_first_launch_done')) {
+      this.globalData.showGuideHint = true
+    }
+  },
+
+  /**
+   * 标记首次启动已完成
+   */
+  markFirstLaunchDone() {
+    wx.setStorageSync('pocket_first_launch_done', true)
+    this.globalData.showGuideHint = false
   },
 
   globalData: {
-    // 全局可通过 getApp().globalData 访问
+    showGuideHint: false
   }
 })

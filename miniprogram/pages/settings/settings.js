@@ -71,6 +71,10 @@ Page({
     wx.navigateTo({ url: '/pages/accounts/accounts' })
   },
 
+  goGuide() {
+    wx.navigateTo({ url: '/pages/guide/guide' })
+  },
+
   onExport() {
     const data = storage.exportAllData()
     const jsonStr = JSON.stringify(data, null, 2)

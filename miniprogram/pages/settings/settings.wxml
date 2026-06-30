@@ -116,6 +116,18 @@
   <!-- 关于 - 合并为一个大卡片 -->
   <view class="section-label">关于</view>
   <view class="settings-card card anim-fade-in-up" style="animation-delay: 0.1s;">
+    <view class="setting-item" bindtap="goGuide">
+      <view class="setting-left">
+        <view class="setting-icon-box" style="background: #F0FAF8;">
+          <text class="si">📖</text>
+        </view>
+        <text class="setting-name">使用方法</text>
+      </view>
+      <view class="setting-right">
+        <text class="setting-arrow">›</text>
+      </view>
+    </view>
+    <view class="setting-divider-compact"></view>
     <view class="setting-item">
       <view class="setting-left">
         <view class="setting-icon-box" style="background: #F0FAF8;">

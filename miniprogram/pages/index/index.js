@@ -42,6 +42,30 @@ Page({
 
   onShow() {
     this.loadData()
+    // 首次启动引导
+    this.checkFirstLaunch()
+  },
+
+  // 检查是否首次启动，引导阅读使用方法
+  checkFirstLaunch() {
+    const app = getApp()
+    if (app.globalData.showGuideHint) {
+      // 延迟弹出，等页面渲染完成
+      setTimeout(() => {
+        wx.showModal({
+          title: '👋 欢迎使用口袋账本',
+          content: '首次使用建议先阅读「使用方法」，快速了解各项功能的用法。',
+          confirmText: '去看看',
+          cancelText: '稍后再看',
+          success: (res) => {
+            app.markFirstLaunchDone()
+            if (res.confirm) {
+              wx.navigateTo({ url: '/pages/guide/guide' })
+            }
+          }
+        })
+      }, 500)
+    }
   },
 
   loadData() {

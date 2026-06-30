@@ -1,0 +1,369 @@
+<!--
+  使用方法页 - 分模块目录讲解
+-->
+<view class="container">
+  <!-- 顶部欢迎 -->
+  <view class="guide-header anim-fade-in-up">
+    <text class="guide-logo">📖</text>
+    <text class="guide-title">使用方法</text>
+    <text class="guide-subtitle">了解口袋账本的每一个功能</text>
+  </view>
+
+  <!-- 目录导航 -->
+  <view class="toc-card card anim-fade-in-up" style="animation-delay: 0.05s;">
+    <text class="toc-title">📑 目录</text>
+    <view class="toc-grid">
+      <view class="toc-item" wx:for="{{sections}}" wx:key="id"
+            bindtap="scrollToSection" data-id="{{item.id}}">
+        <text class="toc-icon">{{item.icon}}</text>
+        <text class="toc-text">{{item.title}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 各模块详细说明 -->
+  <!-- 快速上手 -->
+  <view class="guide-section anim-fade-in-up" id="section-overview">
+    <view class="section-header" bindtap="toggleSection" data-index="0">
+      <view class="flex-row">
+        <text class="section-icon">📱</text>
+        <text class="section-title">快速上手</text>
+      </view>
+      <text class="section-arrow {{expandedIndex === 0 ? 'expanded' : ''}}">›</text>
+    </view>
+    <view class="section-body" wx:if="{{expandedIndex === 0}}">
+      <view class="step-list">
+        <view class="step-item">
+          <text class="step-num">1</text>
+          <view class="step-content">
+            <text class="step-title">记一笔</text>
+            <text class="step-desc">点击底部「记账」标签页，或首页的「记一笔」按钮，选择分类、输入金额即可完成记账。</text>
+          </view>
+        </view>
+        <view class="step-item">
+          <text class="step-num">2</text>
+          <view class="step-content">
+            <text class="step-title">看统计</text>
+            <text class="step-desc">点击底部「统计」标签页，查看月度收支、分类占比、趋势图表。</text>
+          </view>
+        </view>
+        <view class="step-item">
+          <text class="step-num">3</text>
+          <view class="step-content">
+            <text class="step-title">设预算</text>
+            <text class="step-desc">进入「设置」页面，设置每月预算，首页会自动显示预算使用进度。</text>
+          </view>
+        </view>
+      </view>
+      <view class="tip-box">
+        <text class="tip-icon">💡</text>
+        <text class="tip-text">所有数据仅保存在您的设备本地，不会上传到任何服务器。建议定期在设置中导出数据备份。</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 记一笔账 -->
+  <view class="guide-section anim-fade-in-up" id="section-record" style="animation-delay: 0.03s;">
+    <view class="section-header" bindtap="toggleSection" data-index="1">
+      <view class="flex-row">
+        <text class="section-icon">✏️</text>
+        <text class="section-title">记一笔账</text>
+      </view>
+      <text class="section-arrow {{expandedIndex === 1 ? 'expanded' : ''}}">›</text>
+    </view>
+    <view class="section-body" wx:if="{{expandedIndex === 1}}">
+      <view class="info-block">
+        <text class="info-title">基本流程</text>
+        <text class="info-text">选择「支出」或「收入」→ 选择分类 → 输入金额 → 选择日期 → 保存</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">快捷操作</text>
+        <text class="info-text">• 首页常用分类可一键打开记账面板，无需选择分类\n• 数字键盘支持 +10、+50、+100 快捷追加\n• 金额最多输入 8 位整数 + 2 位小数</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">支付方式</text>
+        <text class="info-text">记账时可选择支付方式（如微信钱包、支付宝等），方便追踪各账户的收支情况。不选择也可以正常保存。</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">待报销标记</text>
+        <text class="info-text">帮别人垫付了钱？在支出记录中开启「待报销」开关，系统会帮你追踪哪些钱还没收回来。详见「退款与报销」章节。</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 查看账单 -->
+  <view class="guide-section anim-fade-in-up" id="section-records" style="animation-delay: 0.04s;">
+    <view class="section-header" bindtap="toggleSection" data-index="2">
+      <view class="flex-row">
+        <text class="section-icon">📋</text>
+        <text class="section-title">查看账单</text>
+      </view>
+      <text class="section-arrow {{expandedIndex === 2 ? 'expanded' : ''}}">›</text>
+    </view>
+    <view class="section-body" wx:if="{{expandedIndex === 2}}">
+      <view class="info-block">
+        <text class="info-title">按月浏览</text>
+        <text class="info-text">点击顶部月份切换按钮，或点击月份文字打开日期选择器，快速跳转到目标月份。</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">筛选功能</text>
+        <text class="info-text">• 按类型筛选：全部 / 仅收入 / 仅支出\n• 按分类筛选：选择类型后可进一步按分类过滤\n• 记录按日期分组，每天显示小计</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">编辑与删除</text>
+        <text class="info-text">• 点击记录 → 进入编辑页面\n• 长按记录 → 弹出「编辑」或「删除」选项</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 月度预算 -->
+  <view class="guide-section anim-fade-in-up" id="section-budget" style="animation-delay: 0.05s;">
+    <view class="section-header" bindtap="toggleSection" data-index="3">
+      <view class="flex-row">
+        <text class="section-icon">🎯</text>
+        <text class="section-title">月度预算</text>
+      </view>
+      <text class="section-arrow {{expandedIndex === 3 ? 'expanded' : ''}}">›</text>
+    </view>
+    <view class="section-body" wx:if="{{expandedIndex === 3}}">
+      <view class="info-block">
+        <text class="info-title">设置预算</text>
+        <text class="info-text">进入「设置」→「每月预算」，输入您每月的消费预算金额。</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">首页进度条</text>
+        <text class="info-text">设置预算后，首页会显示预算使用进度条：\n• 绿色：消费在预算 70% 以内，健康\n• 黄色：消费在 70%-90%，需注意\n• 红色：消费超过 90%，已超标</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">订阅预留</text>
+        <text class="info-text">如果开启了订阅，首页进度条会用斜线标记「订阅预留」金额，帮您看到扣除固定支出后还剩多少可用预算。</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 订阅管理 -->
+  <view class="guide-section anim-fade-in-up" id="section-subscription" style="animation-delay: 0.06s;">
+    <view class="section-header" bindtap="toggleSection" data-index="4">
+      <view class="flex-row">
+        <text class="section-icon">🔔</text>
+        <text class="section-title">订阅管理</text>
+      </view>
+      <text class="section-arrow {{expandedIndex === 4 ? 'expanded' : ''}}">›</text>
+    </view>
+    <view class="section-body" wx:if="{{expandedIndex === 4}}">
+      <view class="info-block">
+        <text class="info-title">添加订阅</text>
+        <text class="info-text">进入「设置」→「订阅管理」→ 点击右下角 + 按钮。填写名称、金额、扣费周期、下次扣费日期等信息。</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">支持的周期</text>
+        <text class="info-text">• 每周 — 如健身房\n• 每月 — 如 iCloud、视频会员\n• 每季 — 如部分工具软件\n• 每年 — 如域名续费、年费会员</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">到期提醒</text>
+        <text class="info-text">设置提醒天数（0-7天），在扣费日前收到提醒。即将到期的订阅会在首页顶部醒目提示。</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">续费操作</text>
+        <text class="info-text">订阅到期后，点击「续费」按钮，系统会自动将下次扣费日期推进到下一个周期。</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 扣款日历 -->
+  <view class="guide-section anim-fade-in-up" id="section-calendar" style="animation-delay: 0.07s;">
+    <view class="section-header" bindtap="toggleSection" data-index="5">
+      <view class="flex-row">
+        <text class="section-icon">📅</text>
+        <text class="section-title">扣款日历</text>
+      </view>
+      <text class="section-arrow {{expandedIndex === 5 ? 'expanded' : ''}}">›</text>
+    </view>
+    <view class="section-body" wx:if="{{expandedIndex === 5}}">
+      <view class="info-block">
+        <text class="info-title">日历视图</text>
+        <text class="info-text">首页中部的「扣款日历」卡片，用小圆点标记有订阅扣费的日期：\n• 红色小圆点：当天有 1 笔扣款\n• 橙色宽圆点：当天有多笔扣款</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">查看详情</text>
+        <text class="info-text">点击日历上任意日期，下方会显示当天的扣款详情列表，包括订阅名称和金额。点击左右箭头可切换月份。</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">使用场景</text>
+        <text class="info-text">提前查看"下周哪天有大额扣费"，做好资金准备，避免余额不足。</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 多币种换算 -->
+  <view class="guide-section anim-fade-in-up" id="section-currency" style="animation-delay: 0.08s;">
+    <view class="section-header" bindtap="toggleSection" data-index="6">
+      <view class="flex-row">
+        <text class="section-icon">💱</text>
+        <text class="section-title">多币种换算</text>
+      </view>
+      <text class="section-arrow {{expandedIndex === 6 ? 'expanded' : ''}}">›</text>
+    </view>
+    <view class="section-body" wx:if="{{expandedIndex === 6}}">
+      <view class="info-block">
+        <text class="info-title">选择币种</text>
+        <text class="info-text">添加订阅时，点击金额行左侧的币种标签，可选择：人民币(CNY)、美元(USD)、欧元(EUR)、英镑(GBP)、日元(JPY)、港币(HKD)、韩元(KRW)。</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">自动换算</text>
+        <text class="info-text">选择外币后，下方会实时显示「≈¥XX.XX」的人民币换算预览。订阅列表和统计中也会自动换算为人民币。</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">汇率来源</text>
+        <text class="info-text">汇率通过远程接口获取，本地缓存 24 小时。网络不可用时自动使用内置兜底汇率，不影响使用。</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 年付分摊 -->
+  <view class="guide-section anim-fade-in-up" id="section-spread" style="animation-delay: 0.09s;">
+    <view class="section-header" bindtap="toggleSection" data-index="7">
+      <view class="flex-row">
+        <text class="section-icon">📊</text>
+        <text class="section-title">年付分摊</text>
+      </view>
+      <text class="section-arrow {{expandedIndex === 7 ? 'expanded' : ''}}">›</text>
+    </view>
+    <view class="section-body" wx:if="{{expandedIndex === 7}}">
+      <view class="info-block">
+        <text class="info-title">问题背景</text>
+        <text class="info-text">一次性支付 200 元/年的订阅，如果全部计入当月，会导致该月支出图表异常膨胀，无法反映真实消费水平。</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">如何使用</text>
+        <text class="info-text">添加「每年」周期的订阅时，开启「均摊到每月」开关。系统会将年费 ÷ 12 后计入每月预算，订阅列表中会显示「已均摊」标签。</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">效果示例</text>
+        <text class="info-text">200 元/年的订阅，开启均摊后：\n• 月均成本 = 200 ÷ 12 ≈ 16.67 元\n• 预算预留按 16.67 元计算\n• 不会因单笔大额支出扭曲月度统计</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 账户管理 -->
+  <view class="guide-section anim-fade-in-up" id="section-account" style="animation-delay: 0.1s;">
+    <view class="section-header" bindtap="toggleSection" data-index="8">
+      <view class="flex-row">
+        <text class="section-icon">💳</text>
+        <text class="section-title">账户管理</text>
+      </view>
+      <text class="section-arrow {{expandedIndex === 8 ? 'expanded' : ''}}">›</text>
+    </view>
+    <view class="section-body" wx:if="{{expandedIndex === 8}}">
+      <view class="info-block">
+        <text class="info-title">什么是账户</text>
+        <text class="info-text">账户代表您的钱放在哪里：微信钱包、支付宝、储蓄卡、信用卡、现金等。通过账户管理，您可以清楚知道"钱在哪里"。</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">添加账户</text>
+        <text class="info-text">进入「设置」→「账户管理」→ 点击 + 按钮。设置名称、图标、类型、当前余额。系统预置了 4 个常用账户供直接使用。</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">记账关联</text>
+        <text class="info-text">记账时在「支付方式」行选择使用的账户，统计页会按账户维度展示本月各账户的收支情况。</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">计入总资产</text>
+        <text class="info-text">账户可设置「计入总资产」开关。关闭后该账户余额不纳入首页总资产统计（适合隐藏不常用的账户）。</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 退款与报销 -->
+  <view class="guide-section anim-fade-in-up" id="section-refund" style="animation-delay: 0.11s;">
+    <view class="section-header" bindtap="toggleSection" data-index="9">
+      <view class="flex-row">
+        <text class="section-icon">🏷️</text>
+        <text class="section-title">退款与报销</text>
+      </view>
+      <text class="section-arrow {{expandedIndex === 9 ? 'expanded' : ''}}">›</text>
+    </view>
+    <view class="section-body" wx:if="{{expandedIndex === 9}}">
+      <view class="info-block">
+        <text class="info-title">问题场景</text>
+        <text class="info-text">• 帮同事垫付了饭钱，等他转账报销\n• 网购退货，商家退款\n• 出差垫付费用，等公司报销\n\n这些场景如果简单记为"收入"，会虚增真实收入，导致收支统计失真。</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">标记待报销</text>
+        <text class="info-text">记支出时，打开「待报销」开关。这笔支出会在列表中显示橙色「待报销」标签，首页也会显示待报销金额提醒。</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">收到退款/报销时</text>
+        <text class="info-text">记一笔收入，分类选「退款」，然后点击「关联原始支出」，选择之前标记的那笔待报销支出。关联后：\n• 原支出自动标记为绿色「已报销」\n• 这笔收入不计入月度真实收入\n• 统计中单独显示「已冲抵退款」金额</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">核心原则</text>
+        <text class="info-text">退款/报销 = 支出的回冲，不是新增收入。这样您的「月度收入」始终反映真实收入水平。</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 统计分析 -->
+  <view class="guide-section anim-fade-in-up" id="section-stats" style="animation-delay: 0.12s;">
+    <view class="section-header" bindtap="toggleSection" data-index="10">
+      <view class="flex-row">
+        <text class="section-icon">📈</text>
+        <text class="section-title">统计分析</text>
+      </view>
+      <text class="section-arrow {{expandedIndex === 10 ? 'expanded' : ''}}">›</text>
+    </view>
+    <view class="section-body" wx:if="{{expandedIndex === 10}}">
+      <view class="info-block">
+        <text class="info-title">月度概览</text>
+        <text class="info-text">显示当月收入、支出、结余，以及支出占收入的百分比（消费健康度）。</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">支出分类</text>
+        <text class="info-text">按分类展示本月各项支出的金额和占比，帮您快速发现"钱花在了哪里"。分类按金额从高到低排列。</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">退款/报销统计</text>
+        <text class="info-text">展示当月待报销金额和已冲抵退款金额，帮您追踪还有多少钱没收回来。</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">账户收支</text>
+        <text class="info-text">按账户维度展示本月各账户的收入、支出和净额，帮您了解资金流动情况。</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">趋势图</text>
+        <text class="info-text">展示近 6 个月的收入与支出对比柱状图，帮您发现消费趋势变化。</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 数据管理 -->
+  <view class="guide-section anim-fade-in-up" id="section-data" style="animation-delay: 0.13s;">
+    <view class="section-header" bindtap="toggleSection" data-index="11">
+      <view class="flex-row">
+        <text class="section-icon">💾</text>
+        <text class="section-title">数据管理</text>
+      </view>
+      <text class="section-arrow {{expandedIndex === 11 ? 'expanded' : ''}}">›</text>
+    </view>
+    <view class="section-body" wx:if="{{expandedIndex === 11}}">
+      <view class="info-block">
+        <text class="info-title">导出数据</text>
+        <text class="info-text">进入「设置」→「导出数据」，所有记录、订阅、账户、设置将导出为 JSON 格式并复制到剪贴板。您可以粘贴保存到备忘录或文件中作为备份。</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">导入数据</text>
+        <text class="info-text">先将 JSON 数据复制到剪贴板，然后进入「设置」→「导入数据」，系统会自动读取剪贴板内容并导入。导入会覆盖现有数据，请谨慎操作。</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">清空数据</text>
+        <text class="info-text">「清空所有数据」会删除全部记录、订阅、账户和设置，且无法恢复。操作前会弹出两次确认。</text>
+      </view>
+      <view class="tip-box">
+        <text class="tip-icon">⚠️</text>
+        <text class="tip-text">数据仅保存在设备本地，卸载小程序或清除微信缓存会导致数据丢失。建议定期导出备份。</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="page-bottom-space"></view>
+</view>

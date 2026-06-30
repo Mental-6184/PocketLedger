@@ -8,7 +8,8 @@
     "pages/subscription/subscription",
     "pages/sub-edit/sub-edit",
     "pages/accounts/accounts",
-    "pages/account-edit/account-edit"
+    "pages/account-edit/account-edit",
+    "pages/guide/guide"
   ],
   "window": {
     "navigationBarTextStyle": "white",
