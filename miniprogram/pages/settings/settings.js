@@ -3,6 +3,7 @@
  */
 const storage = require('../../utils/storage')
 const util = require('../../utils/util')
+const { generateExcel, generateJsonBackup, exportToFile } = require('../../utils/export')
 
 Page({
   data: {
@@ -12,7 +13,8 @@ Page({
     recordCount: 0,
     subCount: 0,
     accountCount: 0,
-    showCurrency: false
+    showCurrency: false,
+    showExportSheet: false
   },
 
   onShow() {
@@ -76,19 +78,76 @@ Page({
   },
 
   onExport() {
-    const data = storage.exportAllData()
-    const jsonStr = JSON.stringify(data, null, 2)
+    this.setData({ showExportSheet: true })
+  },
 
-    wx.setClipboardData({
-      data: jsonStr,
-      success: () => {
-        wx.showModal({
-          title: '导出成功',
-          content: '数据已复制到剪贴板，您可以粘贴保存到文件中。',
-          showCancel: false,
-          confirmText: '知道了'
+  hideExportSheet() {
+    this.setData({ showExportSheet: false })
+  },
+
+  onExportExcel() {
+    this.setData({ showExportSheet: false })
+    wx.showLoading({ title: '生成中...' })
+
+    const data = storage.exportAllData()
+    const csv = generateExcel(data)
+    const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '')
+
+    exportToFile(csv, `口袋账本_${timestamp}`, '.csv').then(result => {
+      wx.hideLoading()
+      if (result === 'shared') {
+        wx.showToast({ title: '已发送', icon: 'success' })
+      } else if (result === 'saved') {
+        wx.showToast({ title: '已保存', icon: 'success' })
+      } else {
+        // 降级：复制到剪贴板
+        wx.setClipboardData({
+          data: csv,
+          success: () => {
+            wx.showModal({
+              title: '提示',
+              content: '文件分享不可用，数据已复制到剪贴板。',
+              showCancel: false
+            })
+          }
         })
       }
+    }).catch(() => {
+      wx.hideLoading()
+      wx.showToast({ title: '导出失败', icon: 'none' })
+    })
+  },
+
+  onExportJson() {
+    this.setData({ showExportSheet: false })
+    wx.showLoading({ title: '生成中...' })
+
+    const data = storage.exportAllData()
+    const jsonStr = generateJsonBackup(data)
+    const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '')
+
+    exportToFile(jsonStr, `口袋账本_${timestamp}`, '.json').then(result => {
+      wx.hideLoading()
+      if (result === 'shared') {
+        wx.showToast({ title: '已发送', icon: 'success' })
+      } else if (result === 'saved') {
+        wx.showToast({ title: '已保存', icon: 'success' })
+      } else {
+        // 降级：复制到剪贴板
+        wx.setClipboardData({
+          data: jsonStr,
+          success: () => {
+            wx.showModal({
+              title: '提示',
+              content: '文件分享不可用，数据已复制到剪贴板。',
+              showCancel: false
+            })
+          }
+        })
+      }
+    }).catch(() => {
+      wx.hideLoading()
+      wx.showToast({ title: '导出失败', icon: 'none' })
     })
   },
 

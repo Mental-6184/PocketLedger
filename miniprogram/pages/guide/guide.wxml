@@ -348,7 +348,10 @@
     <view class="section-body" hidden="{{expandedIndex !== 11}}">
       <view class="info-block">
         <text class="info-title">导出数据</text>
-        <text class="info-text">进入「设置」→「导出数据」，所有记录、订阅、账户、设置将导出为 JSON 格式并复制到剪贴板。您可以粘贴保存到备忘录或文件中作为备份。</text>
+        <text class="info-text">进入「设置」→「导出数据」，会弹出格式选择面板：</text>
+        <text class="info-text">• CSV 表格（推荐）：手机电脑都能直接用 Excel/WPS 打开查看，数据以表格形式展示，清晰直观。</text>
+        <text class="info-text">• JSON 备份文件：完整的数据备份格式，适合后续重新导入恢复。</text>
+        <text class="info-text">选择格式后，文件会通过微信分享弹出，您可以转发到「文件传输助手」保存到电脑。</text>
       </view>
       <view class="info-block">
         <text class="info-title">导入数据</text>

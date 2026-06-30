@@ -72,6 +72,31 @@
     </view>
   </view>
 
+  <!-- 导出格式选择面板 -->
+  <view class="currency-panel {{showExportSheet ? 'show' : ''}}" wx:if="{{showExportSheet}}" bindtap="hideExportSheet">
+    <view class="currency-sheet" catchtap="">
+      <text class="currency-title">选择导出格式</text>
+      <view class="export-options">
+        <view class="export-option" bindtap="onExportExcel">
+          <view class="export-option-icon">📊</view>
+          <view class="export-option-info">
+            <text class="export-option-title">导出为 CSV 表格</text>
+            <text class="export-option-desc">手机电脑都能打开，推荐使用</text>
+          </view>
+          <text class="setting-arrow">›</text>
+        </view>
+        <view class="export-option" bindtap="onExportJson">
+          <view class="export-option-icon">📄</view>
+          <view class="export-option-info">
+            <text class="export-option-title">导出为 JSON 备份文件</text>
+            <text class="export-option-desc">完整数据备份，可用于重新导入</text>
+          </view>
+          <text class="setting-arrow">›</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
   <!-- 数据管理 - 合并为一个大卡片 -->
   <view class="section-label">数据管理</view>
   <view class="settings-card card anim-fade-in-up" style="animation-delay: 0.05s;">

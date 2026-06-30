@@ -209,6 +209,51 @@
   font-weight: 600;
 }
 
+/* 导出选项 */
+.export-options {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.export-option {
+  display: flex;
+  align-items: center;
+  padding: 28rpx 24rpx;
+  background: var(--color-bg);
+  border-radius: var(--radius-lg);
+  transition: background-color 0.15s ease;
+}
+
+.export-option:active {
+  background: var(--color-border);
+}
+
+.export-option-icon {
+  font-size: 48rpx;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+
+.export-option-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.export-option-title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 6rpx;
+}
+
+.export-option-desc {
+  display: block;
+  font-size: 24rpx;
+  color: var(--color-text-light);
+}
+
 /* 底部说明 */
 .app-footer {
   text-align: center;
