@@ -1,0 +1,109 @@
+<!--
+  记账编辑页 - 新增/编辑收入支出记录
+  点击金额区域弹出键盘，点击空白处收起
+-->
+<view class="page-wrapper">
+  <!-- 可滚动内容区域 -->
+  <scroll-view class="page-scroll" scroll-y enhanced show-scrollbar="{{showKeyboard}}">
+    <view class="scroll-content" bindtap="hideKeyboard">
+      <!-- 类型切换 - 磨砂白底滑块 -->
+      <view class="type-switch" catchtap="preventBubble">
+        <view class="type-btn {{form.type === 'expense' ? 'active expense' : ''}}" bindtap="setType" data-type="expense">支出</view>
+        <view class="type-btn {{form.type === 'income' ? 'active income' : ''}}" bindtap="setType" data-type="income">收入</view>
+        <view class="type-indicator {{form.type}}"></view>
+      </view>
+
+      <!-- 金额显示区域 - 点击弹出键盘 -->
+      <view class="amount-display card {{showKeyboard ? 'active' : ''}}" catchtap="onAmountTap">
+        <view class="amount-display-row">
+          <text class="amount-display-currency">{{currency}}</text>
+          <text class="amount-display-value">{{form.amount || '0.00'}}</text>
+        </view>
+        <view class="amount-hint text-xs text-secondary">
+          <text wx:if="{{form.amount}}">点击数字键盘输入</text>
+          <text wx:else>点击此处开始输入</text>
+        </view>
+      </view>
+
+      <!-- 分类选择 - 磨砂玻璃质感 -->
+      <view class="category-card" catchtap="preventBubble">
+        <text class="form-label" style="margin-left: 4rpx;">选择分类</text>
+        <view class="category-grid">
+          <view class="category-item {{selectedCategory === item.id ? 'active' : ''}}"
+                wx:for="{{categories}}" wx:key="id"
+                bindtap="selectCategory" data-id="{{item.id}}"
+                style="animation-delay: {{index < 4 ? index * 0.03 : 0}}s;">
+            <text class="cat-icon">{{item.icon}}</text>
+            <text class="cat-name">{{item.name}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 日期和备注（压缩到一行） -->
+      <view class="card compact-info">
+        <view class="compact-info-row flex-between">
+          <picker mode="date" value="{{form.date}}" bindchange="onDateChange" class="compact-date flex-row">
+            <text class="compact-info-label">📅</text>
+            <text class="compact-info-value">{{form.date}}</text>
+          </picker>
+          <view class="compact-note flex-row" bindtap="toggleNoteInput">
+            <text class="compact-info-label">✏️</text>
+            <text class="compact-info-value">{{form.note || '添加备注'}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 整体保存按钮 -->
+      <view class="save-section" catchtap="preventBubble">
+        <button class="btn btn-primary btn-block save-btn" bindtap="onSave">保存记录</button>
+        <button class="btn btn-outline btn-block save-btn mt-md" wx:if="{{!isNew}}" bindtap="onDelete">删除记录</button>
+      </view>
+
+      <!-- 底部留白（给键盘空间） -->
+      <view class="keyboard-placeholder" wx:if="{{showKeyboard}}"></view>
+    </view>
+  </scroll-view>
+
+  <!-- 备注输入弹窗 -->
+  <view class="note-input-mask" wx:if="{{showNoteInput}}" bindtap="toggleNoteInput">
+    <view class="note-input-modal" catchtap="preventBubble">
+      <view class="note-input-header flex-between">
+        <text class="note-input-title">添加备注</text>
+        <text class="note-input-close" bindtap="toggleNoteInput">完成</text>
+      </view>
+      <textarea class="note-input-field" placeholder="添加备注（可选）" value="{{form.note}}" bindinput="onNoteInput" maxlength="100" focus="{{showNoteInput}}" />
+    </view>
+  </view>
+
+  <!-- 自定义数字键盘 - 弹出式 -->
+  <view class="keyboard-mask" wx:if="{{showKeyboard}}" bindtap="hideKeyboard">
+    <view class="custom-keyboard {{showKeyboard ? 'show' : ''}}" catchtap="preventBubble">
+      <!-- 快捷金额 -->
+      <view class="quick-amount-row">
+        <view class="quick-amount-btn" bindtap="onQuickAmount" data-value="10">+10</view>
+        <view class="quick-amount-btn" bindtap="onQuickAmount" data-value="50">+50</view>
+        <view class="quick-amount-btn" bindtap="onQuickAmount" data-value="100">+100</view>
+        <view class="quick-amount-btn" bindtap="clearAmount">清空</view>
+      </view>
+      <!-- 数字键盘 -->
+      <view class="keyboard-grid">
+        <view class="keyboard-key" bindtap="onKeyTap" data-key="1">1</view>
+        <view class="keyboard-key" bindtap="onKeyTap" data-key="2">2</view>
+        <view class="keyboard-key" bindtap="onKeyTap" data-key="3">3</view>
+        <view class="keyboard-key" bindtap="onKeyTap" data-key="4">4</view>
+        <view class="keyboard-key" bindtap="onKeyTap" data-key="5">5</view>
+        <view class="keyboard-key" bindtap="onKeyTap" data-key="6">6</view>
+        <view class="keyboard-key" bindtap="onKeyTap" data-key="7">7</view>
+        <view class="keyboard-key" bindtap="onKeyTap" data-key="8">8</view>
+        <view class="keyboard-key" bindtap="onKeyTap" data-key="9">9</view>
+        <view class="keyboard-key" bindtap="onKeyTap" data-key=".">.</view>
+        <view class="keyboard-key" bindtap="onKeyTap" data-key="0">0</view>
+        <view class="keyboard-key keyboard-key-delete" bindtap="onKeyTap" data-key="delete">⌫</view>
+      </view>
+      <!-- 确认金额按钮 -->
+      <view class="keyboard-confirm">
+        <button class="btn btn-primary" bindtap="confirmAmount">确认</button>
+      </view>
+    </view>
+  </view>
+</view>

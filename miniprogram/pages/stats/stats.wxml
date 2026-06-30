@@ -1,0 +1,147 @@
+<!--
+  统计页 - 月度概览、分类占比、趋势图
+-->
+<view class="container">
+  <!-- 月份选择 -->
+  <view class="month-selector anim-fade-in-up">
+    <view class="month-arrow" bindtap="prevMonth">◀</view>
+    <picker mode="date" fields="month" value="{{currentMonth}}" bindchange="onMonthChange">
+      <text class="month-text">{{currentMonthCN}}</text>
+    </picker>
+    <view class="month-arrow" bindtap="nextMonth">▶</view>
+  </view>
+
+  <!-- 月度概览 -->
+  <view class="stats-overview anim-fade-in-up" style="animation-delay: 0.05s;">
+    <view class="stats-overview-header">
+      <text class="stats-overview-title">月度概览</text>
+      <text class="stats-overview-count" wx:if="{{recordCount > 0}}">{{recordCount}} 笔记录</text>
+    </view>
+    <view class="stats-overview-grid">
+      <view class="stats-overview-item">
+        <text class="so-label">收入</text>
+        <view class="so-value amount-income">
+          <text class="currency-sym">{{currency}}</text>{{stats.incomeFormatted}}
+        </view>
+      </view>
+      <view class="stats-overview-divider"></view>
+      <view class="stats-overview-item">
+        <text class="so-label">支出</text>
+        <view class="so-value amount-expense">
+          <text class="currency-sym">{{currency}}</text>{{stats.expenseFormatted}}
+        </view>
+      </view>
+      <view class="stats-overview-divider"></view>
+      <view class="stats-overview-item">
+        <text class="so-label">结余</text>
+        <view class="so-value {{stats.balance >= 0 ? 'amount-income' : 'amount-expense'}}">
+          <text class="currency-sym">{{currency}}</text>{{stats.balanceFormatted}}
+        </view>
+      </view>
+    </view>
+    <!-- 消费健康度 -->
+    <view class="health-bar-section" wx:if="{{stats.income > 0}}">
+      <view class="health-bar-header">
+        <text class="health-label">支出占比</text>
+        <text class="health-value {{expenseRatio > 90 ? 'health-danger' : expenseRatio > 70 ? 'health-warn' : 'health-good'}}">{{expenseRatioText}}%</text>
+      </view>
+      <view class="health-bar">
+        <view class="health-bar-fill {{expenseRatio > 90 ? 'health-danger-bg' : expenseRatio > 70 ? 'health-warn-bg' : 'health-good-bg'}}"
+              style="width: {{expenseRatio > 100 ? 100 : expenseRatio}}%;"></view>
+      </view>
+      <view class="health-hint">
+        <text class="text-xs text-secondary" wx:if="{{expenseRatio <= 70}}">💚 消费健康，结余充裕</text>
+        <text class="text-xs text-secondary" wx:elif="{{expenseRatio <= 90}}">💛 消费偏高，注意控制</text>
+        <text class="text-xs text-secondary" wx:else>🔴 消费过高，已超出合理范围</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 分类占比 -->
+  <view class="card" wx:if="{{categoryStats.length > 0}}" style="animation-delay: 0.1s;">
+    <view class="flex-between mb-md">
+      <text class="card-title" style="margin-bottom:0">支出分类</text>
+      <text class="text-xs text-secondary">共 {{categoryStats.length}} 类</text>
+    </view>
+
+    <!-- 分类卡片网格 -->
+    <view class="cat-card-grid">
+      <view class="cat-card anim-fade-in-up" wx:for="{{categoryStats}}" wx:key="id"
+            style="animation-delay: {{index < 3 ? 0.08 + index * 0.04 : 0}}s; border-left: 6rpx solid {{item.color}};">
+        <view class="cat-card-top">
+          <text class="cat-card-icon">{{item.icon}}</text>
+          <view class="cat-card-info">
+            <text class="cat-card-name">{{item.name}}</text>
+            <text class="cat-card-amount">{{currency}}{{item.amountFormatted}}</text>
+          </view>
+          <text class="cat-card-percent" style="color: {{item.color}};">{{item.percentText}}%</text>
+        </view>
+        <view class="cat-card-bar-wrap">
+          <view class="cat-card-bar" style="width: {{item.percent}}%; background: {{item.color}};"></view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 趋势图 -->
+  <view class="card" wx:if="{{trendData.length > 0}}" style="animation-delay: 0.15s;">
+    <view class="flex-between mb-md">
+      <text class="card-title" style="margin-bottom:0">近6个月趋势</text>
+    </view>
+
+    <!-- 图例 -->
+    <view class="legend flex-center">
+      <view class="legend-item flex-row">
+        <view class="legend-dot" style="background: #27AE60;"></view>
+        <text class="text-xs">收入</text>
+      </view>
+      <view class="legend-item flex-row" style="margin-left: 40rpx;">
+        <view class="legend-dot" style="background: #D4605A;"></view>
+        <text class="text-xs">支出</text>
+      </view>
+    </view>
+
+    <!-- 柱状图 -->
+    <view class="chart-area">
+      <view class="chart-grid">
+        <view class="chart-line" wx:for="{{chartLines}}" wx:key="*this" style="bottom: {{item}}%;">
+          <view class="chart-line-label">{{chartLineLabels[index]}}</view>
+        </view>
+      </view>
+      <view class="chart-bars">
+        <view class="chart-group anim-fade-in-up" wx:for="{{trendData}}" wx:key="month"
+              style="animation-delay: {{index < 3 ? 0.1 + index * 0.06 : 0}}s;">
+          <view class="chart-bar-pair">
+            <view class="chart-bar-wrap">
+              <text class="chart-bar-val" wx:if="{{item.income > 0}}">{{item.incomeShort}}</text>
+              <view class="chart-bar income-bar" style="height: {{item.incomeHeight}}%;"></view>
+            </view>
+            <view class="chart-bar-wrap">
+              <text class="chart-bar-val" wx:if="{{item.expense > 0}}">{{item.expenseShort}}</text>
+              <view class="chart-bar expense-bar" style="height: {{item.expenseHeight}}%;"></view>
+            </view>
+          </view>
+          <text class="chart-label">{{item.monthLabel}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 - 骨架屏风格 -->
+  <view class="empty-state-chart" wx:if="{{categoryStats.length === 0 && trendData.length === 0}}">
+    <!-- 骨架图表 -->
+    <view class="skeleton-chart">
+      <view class="skeleton-bar-group" wx:for="{{[1,2,3,4,5,6]}}" wx:key="*this">
+        <view class="skeleton-bar income" style="height: {{20 + index * 10}}%;"></view>
+        <view class="skeleton-bar expense" style="height: {{15 + index * 8}}%;"></view>
+      </view>
+    </view>
+    <view class="empty-chart-text">
+      <text class="empty-icon">📊</text>
+      <text class="empty-text">记账后才能生成趋势图哦</text>
+      <text class="text-sm text-secondary">开始记录你的第一笔账单吧</text>
+    </view>
+  </view>
+
+  <view class="page-bottom-space"></view>
+</view>

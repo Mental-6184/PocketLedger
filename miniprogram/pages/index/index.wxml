@@ -1,0 +1,284 @@
+<!--
+  首页 - 口袋账本
+  展示月度概览、预算进度、常用分类、最近记录、即将到期订阅
+-->
+<view class="container">
+  <!-- 顶部月度概览 -->
+  <view class="overview-card card anim-fade-in-up">
+    <view class="overview-header flex-between">
+      <text class="overview-month">{{currentMonthCN}}</text>
+      <text class="overview-label">本月概览</text>
+    </view>
+
+    <view class="overview-stats">
+      <view class="stat-item">
+        <text class="stat-label">收入</text>
+        <view class="stat-value amount-income">
+          <text class="currency-sym">{{currency}}</text>{{incomeFormatted}}
+        </view>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-label">支出</text>
+        <view class="stat-value amount-expense">
+          <text class="currency-sym">{{currency}}</text>{{expenseFormatted}}
+        </view>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-label">结余</text>
+        <view class="stat-value {{balance >= 0 ? 'amount-income' : 'amount-expense'}}">
+          <text class="currency-sym">{{currency}}</text>{{balanceFormatted}}
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 预算进度（含订阅预留） -->
+  <view class="card budget-card" wx:if="{{budget > 0}}">
+    <view class="flex-between mb-sm">
+      <text class="card-title" style="margin-bottom:0">月预算</text>
+      <text class="text-sm text-secondary">{{budgetPercent}}%</text>
+    </view>
+    <view class="progress-bar">
+      <view class="progress-fill {{budgetPercent > 100 ? 'progress-fill-danger' : budgetPercent > 80 ? 'progress-fill-warning' : ''}}"
+            style="width: {{budgetPercent > 100 ? 100 : budgetPercent}}%"></view>
+      <!-- 订阅预留区域 -->
+      <view class="progress-reserved" wx:if="{{showBudgetDetail}}"
+            style="left: {{budgetPercent > 100 ? 100 : budgetPercent}}%; width: {{budgetWithSub - budgetPercent > 0 ? budgetWithSub - budgetPercent : 0}}%;">
+      </view>
+    </view>
+    <view class="flex-between mt-sm">
+      <text class="text-xs text-secondary">已用 {{currency}}{{expenseFormatted}}</text>
+      <text class="text-xs text-secondary">预算 {{currency}}{{budgetFormatted}}</text>
+    </view>
+    <!-- 订阅预留提示 -->
+    <view class="budget-detail mt-sm" wx:if="{{showBudgetDetail}}">
+      <view class="budget-detail-row flex-between">
+        <text class="text-xs text-secondary">📌 固定订阅预留</text>
+        <text class="text-xs" style="color: var(--color-warning);">{{currency}}{{subscriptionReserved}}</text>
+      </view>
+      <view class="budget-detail-row flex-between">
+        <text class="text-xs text-secondary">💰 本月可用余额</text>
+        <text class="text-xs {{availableBudgetPositive ? 'amount-income' : 'amount-expense'}}">
+          {{currency}}{{availableBudget}}
+        </text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 常用分类快捷入口 -->
+  <view class="card quick-category-card anim-fade-in-up" style="animation-delay: 0.05s;" wx:if="{{quickCategories.length > 0}}">
+    <view class="flex-between mb-md">
+      <text class="card-title" style="margin-bottom:0">快捷记账</text>
+      <text class="text-xs text-secondary">常用分类</text>
+    </view>
+    <view class="quick-category-grid">
+      <view class="quick-category-item" wx:for="{{quickCategories}}" wx:key="id"
+            bindtap="onQuickCategoryTap" data-category="{{item}}">
+        <view class="quick-category-icon">{{item.icon}}</view>
+        <text class="quick-category-name">{{item.name}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 快速操作 -->
+  <view class="quick-actions anim-fade-in-up" style="animation-delay: 0.08s;">
+    <view class="action-card" bindtap="goAddRecord">
+      <text class="action-icon">✏️</text>
+      <text class="action-label">记一笔</text>
+    </view>
+    <view class="action-card" bindtap="goAddSubscription">
+      <text class="action-icon">🔔</text>
+      <text class="action-label">订阅管理</text>
+    </view>
+  </view>
+
+  <!-- 扣款日历 -->
+  <view class="card billing-calendar anim-fade-in-up" style="animation-delay: 0.1s;" wx:if="{{subCount > 0}}">
+    <view class="flex-between mb-sm">
+      <text class="card-title" style="margin-bottom:0">📅 扣款日历</text>
+      <text class="text-xs text-secondary">{{calendarMonthCN}}</text>
+    </view>
+
+    <!-- 月份切换 -->
+    <view class="calendar-nav flex-between">
+      <view class="calendar-nav-btn" bindtap="onCalendarPrev">
+        <text>‹</text>
+      </view>
+      <text class="calendar-nav-month">{{calendarMonthCN}}</text>
+      <view class="calendar-nav-btn" bindtap="onCalendarNext">
+        <text>›</text>
+      </view>
+    </view>
+
+    <!-- 星期标题 -->
+    <view class="calendar-weekdays">
+      <text class="calendar-weekday">日</text>
+      <text class="calendar-weekday">一</text>
+      <text class="calendar-weekday">二</text>
+      <text class="calendar-weekday">三</text>
+      <text class="calendar-weekday">四</text>
+      <text class="calendar-weekday">五</text>
+      <text class="calendar-weekday">六</text>
+    </view>
+
+    <!-- 日历网格 -->
+    <view class="calendar-body">
+      <view class="calendar-row" wx:for="{{calendarGrid}}" wx:for-item="week" wx:key="index">
+        <view class="calendar-cell {{day.isToday ? 'today' : ''}} {{day.isCurrentMonth ? '' : 'other-month'}} {{selectedDate === day.date ? 'selected' : ''}}"
+              wx:for="{{week}}" wx:for-item="day" wx:key="date"
+              bindtap="onCalendarDayTap" data-date="{{day.date}}">
+          <text class="calendar-day-num">{{day.day}}</text>
+          <view class="calendar-dot" wx:if="{{day.hasBill}}">
+            <view class="calendar-dot-inner {{day.billCount > 1 ? 'multi' : ''}}"></view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 选中日期的扣款详情 -->
+    <view class="calendar-detail" wx:if="{{selectedDate && selectedDateBills.length > 0}}">
+      <view class="calendar-detail-header">
+        <text class="text-xs text-secondary">{{selectedDate}} 扣款</text>
+      </view>
+      <view class="calendar-detail-list">
+        <view class="calendar-detail-item" wx:for="{{selectedDateBills}}" wx:key="id"
+              bindtap="goSubEdit" data-id="{{item.id}}">
+          <view class="flex-row flex-1">
+            <view class="calendar-bill-dot"></view>
+            <text class="calendar-bill-name">{{item.name}}</text>
+            <text class="text-xs text-secondary" style="margin-left:8rpx;">{{item.cycleName}}</text>
+          </view>
+          <view class="text-right">
+            <text class="amount amount-expense">{{item.symbol}}{{item.amount}}</text>
+            <text class="text-xs text-secondary cny-hint" wx:if="{{item.showConversion}}">≈{{currency}}{{item.cnyAmount}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="calendar-empty-hint" wx:if="{{selectedDate && selectedDateBills.length === 0}}">
+      <text class="text-xs text-secondary">当日无扣款</text>
+    </view>
+  </view>
+
+  <!-- 快捷输入弹窗 -->
+  <view class="quick-input-mask" wx:if="{{showQuickInput}}" bindtap="closeQuickInput">
+    <view class="quick-input-modal" catchtap="preventBubble">
+      <view class="quick-input-header">
+        <text class="quick-input-category-icon">{{quickCategory.icon}}</text>
+        <text class="quick-input-category-name">{{quickCategory.name}}</text>
+      </view>
+      <view class="quick-input-amount">
+        <text class="quick-input-currency">{{currency}}</text>
+        <text class="quick-input-value">{{quickAmount || '0.00'}}</text>
+      </view>
+      <view class="quick-keyboard">
+        <view class="quick-key" bindtap="onQuickKeyTap" data-key="1">1</view>
+        <view class="quick-key" bindtap="onQuickKeyTap" data-key="2">2</view>
+        <view class="quick-key" bindtap="onQuickKeyTap" data-key="3">3</view>
+        <view class="quick-key" bindtap="onQuickKeyTap" data-key="4">4</view>
+        <view class="quick-key" bindtap="onQuickKeyTap" data-key="5">5</view>
+        <view class="quick-key" bindtap="onQuickKeyTap" data-key="6">6</view>
+        <view class="quick-key" bindtap="onQuickKeyTap" data-key="7">7</view>
+        <view class="quick-key" bindtap="onQuickKeyTap" data-key="8">8</view>
+        <view class="quick-key" bindtap="onQuickKeyTap" data-key="9">9</view>
+        <view class="quick-key" bindtap="onQuickKeyTap" data-key=".">.</view>
+        <view class="quick-key" bindtap="onQuickKeyTap" data-key="0">0</view>
+        <view class="quick-key quick-key-delete" bindtap="onQuickKeyTap" data-key="delete">⌫</view>
+      </view>
+      <view class="quick-input-actions">
+        <button class="btn btn-primary btn-block" bindtap="saveQuickRecord">保存</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 我的订阅 -->
+  <view class="card sub-overview-card" wx:if="{{subCount > 0}}">
+    <view class="flex-between">
+      <text class="card-title" style="margin-bottom:0">我的订阅</text>
+      <view class="flex-row" bindtap="goSubscription">
+        <text class="text-sm text-secondary">共 {{subCount}} 个</text>
+        <text class="text-sm text-secondary" style="margin-left: 8rpx;">查看全部 ›</text>
+      </view>
+    </view>
+    <view class="sub-cost-row mt-md">
+      <text class="sub-cost-label">月均花费</text>
+      <text class="sub-cost-value amount-expense">{{currency}}{{monthlyCost}}</text>
+    </view>
+    <view class="sub-mini-list mt-md">
+      <view class="sub-mini-item" wx:for="{{activeSubs}}" wx:key="id"
+            bindtap="goSubEdit" data-id="{{item.id}}">
+        <view class="flex-row flex-1">
+          <view class="sub-mini-dot"></view>
+          <text class="sub-mini-name">{{item.name}}</text>
+        </view>
+        <view class="flex-row">
+          <text class="text-xs text-secondary" style="margin-right: 12rpx;">{{item.cycleName}}</text>
+          <text class="amount amount-expense">{{item.currencySymbol}}{{item.amountFormatted}}</text>
+        </view>
+      </view>
+    </view>
+    <view class="sub-more-hint" wx:if="{{subCount > 3}}" bindtap="goSubscription">
+      <text class="text-xs text-secondary">还有 {{subCount - 3}} 个订阅 ›</text>
+    </view>
+  </view>
+
+  <!-- 即将到期的订阅 -->
+  <view class="card" wx:if="{{expiringSubs.length > 0}}">
+    <view class="flex-between">
+      <text class="card-title" style="margin-bottom:0">⚠️ 即将到期</text>
+      <text class="text-sm text-secondary" bindtap="goSubscription">查看全部</text>
+    </view>
+    <view class="sub-list mt-md">
+      <view class="sub-item" wx:for="{{expiringSubs}}" wx:key="id" bindtap="goSubEdit" data-id="{{item.id}}">
+        <view class="flex-between">
+          <view class="flex-row">
+            <text class="sub-name">{{item.name}}</text>
+            <text class="tag tag-warning" wx:if="{{item.daysLeft <= 0}}">今日扣费</text>
+            <text class="tag tag-warning" wx:elif="{{item.daysLeft <= item.remindDays}}">{{item.daysLeft}}天后</text>
+          </view>
+          <text class="amount">{{item.currencySymbol}}{{item.amountFormatted}}</text>
+        </view>
+        <text class="text-xs text-secondary mt-sm">下次扣费：{{item.nextDateFormatted}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 最近记录 -->
+  <view class="card">
+    <view class="flex-between">
+      <text class="card-title" style="margin-bottom:0">最近记录</text>
+      <text class="text-sm text-secondary" bindtap="goRecords">查看全部</text>
+    </view>
+
+    <view wx:if="{{recentRecords.length === 0}}" class="empty-state">
+      <text class="empty-icon">📝</text>
+      <text class="empty-text">还没有记账记录</text>
+      <button class="btn btn-primary btn-sm" bindtap="goAddRecord">记一笔</button>
+    </view>
+
+    <view class="record-list mt-md" wx:else>
+      <view class="record-item" wx:for="{{recentRecords}}" wx:key="id" bindtap="goEditRecord" data-id="{{item.id}}">
+        <view class="record-icon-wrap">
+          <text class="record-icon">{{item.categoryIcon}}</text>
+        </view>
+        <view class="record-info flex-1">
+          <view class="flex-between">
+            <text class="record-category">{{item.categoryName}}</text>
+            <text class="record-amount amount {{item.type === 'income' ? 'amount-income' : 'amount-expense'}}">
+              {{item.type === 'income' ? '+' : '-'}}{{currency}}{{item.amountFormatted}}
+            </text>
+          </view>
+          <view class="flex-between mt-sm">
+            <text class="text-xs text-secondary">{{item.dateFormatted}}</text>
+            <text class="text-xs text-secondary" wx:if="{{item.note}}">{{item.note}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="page-bottom-space"></view>
+</view>

@@ -1,0 +1,104 @@
+<!--
+  订阅编辑页 - 新增/编辑订阅项目
+-->
+<view class="container">
+  <view class="card">
+    <view class="form-group">
+      <text class="form-label">订阅名称</text>
+      <input class="form-input" placeholder="如：Netflix、iCloud、健身房" value="{{form.name}}" bindinput="onNameInput" />
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">金额</text>
+      <view class="amount-row flex-row">
+        <view class="currency-selector" bindtap="toggleCurrencyPicker">
+          <text class="currency-code">{{selectedCurrency}}</text>
+          <text class="currency-arrow">▾</text>
+        </view>
+        <input class="form-input flex-1" type="digit" placeholder="0.00" value="{{form.amount}}" bindinput="onAmountInput" />
+      </view>
+      <text class="cny-preview" wx:if="{{cnyPreview}}">{{cnyPreview}}</text>
+    </view>
+
+    <!-- 币种选择弹窗 -->
+    <view class="currency-mask" wx:if="{{showCurrencyPicker}}" bindtap="closeCurrencyPicker">
+      <view class="currency-modal" catchtap="">
+        <view class="currency-modal-title">选择币种</view>
+        <view class="currency-list">
+          <view class="currency-item {{selectedCurrency === item.code ? 'active' : ''}}"
+                wx:for="{{currencies}}" wx:key="code"
+                bindtap="selectCurrency" data-code="{{item.code}}">
+            <view class="currency-item-left">
+              <text class="currency-item-symbol">{{item.symbol}}</text>
+              <view class="currency-item-info">
+                <text class="currency-item-name">{{item.name}}</text>
+                <text class="currency-item-code">{{item.code}}</text>
+              </view>
+            </view>
+            <text class="currency-item-check" wx:if="{{selectedCurrency === item.code}}">✓</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">扣费周期</text>
+      <view class="cycle-grid">
+        <view class="cycle-item {{selectedCycle === item.id ? 'active' : ''}}"
+              wx:for="{{cycles}}" wx:key="id"
+              bindtap="selectCycle" data-id="{{item.id}}"
+              style="animation-delay: {{index < 3 ? index * 0.04 : 0}}s;">
+          {{item.name}}
+        </view>
+      </view>
+      <!-- 年付均摊开关（仅年付时显示） -->
+      <view class="spread-yearly-row" wx:if="{{selectedCycle === 'yearly'}}">
+        <view class="spread-yearly-info">
+          <text class="spread-yearly-label">均摊到每月</text>
+          <text class="spread-yearly-hint">将年费分摊到12个月，避免单月图表异常</text>
+        </view>
+        <switch checked="{{form.spreadYearly}}" bindchange="onSpreadYearlyChange" color="#2AA198" />
+      </view>
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">下次扣费日期</text>
+      <picker mode="date" value="{{form.nextDate}}" bindchange="onNextDateChange">
+        <view class="form-input flex-between">
+          <text>{{form.nextDate || '选择日期'}}</text>
+          <text class="picker-arrow">▾</text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">提前提醒天数</text>
+      <view class="remind-grid">
+        <view class="remind-item {{form.remindDays === item ? 'active' : ''}}"
+              wx:for="{{remindOptions}}" wx:key="*this"
+              bindtap="selectRemind" data-days="{{item}}"
+              style="animation-delay: {{index < 3 ? index * 0.04 : 0}}s;">
+          {{item === 0 ? '不提醒' : item + '天'}}
+        </view>
+      </view>
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">备注</text>
+      <textarea class="form-input" placeholder="添加备注（可选）" value="{{form.note}}" bindinput="onNoteInput" maxlength="100" />
+    </view>
+
+    <view class="form-group">
+      <view class="flex-between">
+        <text class="form-label" style="margin-bottom:0">启用订阅</text>
+        <switch checked="{{form.enabled}}" bindchange="onEnabledChange" color="#2AA198" />
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="actions">
+    <button class="btn btn-primary btn-block" bindtap="onSave">保存</button>
+    <button class="btn btn-outline btn-block mt-md" wx:if="{{!isNew}}" bindtap="onDelete">删除订阅</button>
+  </view>
+</view>

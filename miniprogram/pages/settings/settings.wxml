@@ -1,0 +1,142 @@
+<!--
+  设置页 - 大通栏卡片设计
+-->
+<view class="container">
+  <!-- 偏好设置 + 功能 - 合并为一个大卡片 -->
+  <view class="section-label">偏好设置</view>
+  <view class="settings-card card anim-fade-in-up">
+    <view class="setting-item">
+      <view class="setting-left">
+        <view class="setting-icon-box" style="background: #E8F6F4;">
+          <text class="si">💰</text>
+        </view>
+        <text class="setting-name">每月预算</text>
+      </view>
+      <view class="budget-input">
+        <text class="budget-currency">{{currency}}</text>
+        <input class="budget-field" type="digit" value="{{budgetInput}}" bindinput="onBudgetInput" placeholder="未设置" bindblur="saveBudget" />
+      </view>
+    </view>
+    <view class="setting-divider-compact"></view>
+    <view class="setting-item" bindtap="onCurrencyTap">
+      <view class="setting-left">
+        <view class="setting-icon-box" style="background: #FEF5E7;">
+          <text class="si">💱</text>
+        </view>
+        <text class="setting-name">货币符号</text>
+      </view>
+      <view class="setting-right">
+        <text class="setting-value">{{currency}}</text>
+        <text class="setting-arrow">›</text>
+      </view>
+    </view>
+    <view class="setting-divider-compact"></view>
+    <view class="setting-item" bindtap="goSubscription">
+      <view class="setting-left">
+        <view class="setting-icon-box" style="background: #FDE8E8;">
+          <text class="si">🔔</text>
+        </view>
+        <text class="setting-name">订阅管理</text>
+      </view>
+      <view class="setting-right">
+        <text class="setting-hint" wx:if="{{subCount > 0}}">{{subCount}} 个订阅</text>
+        <text class="setting-arrow">›</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 货币选择弹出层 -->
+  <view class="currency-panel {{showCurrency ? 'show' : ''}}" wx:if="{{showCurrency}}" bindtap="hideCurrency">
+    <view class="currency-sheet" catchtap="">
+      <text class="currency-title">选择货币符号</text>
+      <view class="currency-grid">
+        <view class="currency-item {{currency === item ? 'active' : ''}}"
+              wx:for="{{currencyOptions}}" wx:key="*this"
+              bindtap="setCurrency" data-currency="{{item}}">
+          {{item}}
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 数据管理 - 合并为一个大卡片 -->
+  <view class="section-label">数据管理</view>
+  <view class="settings-card card anim-fade-in-up" style="animation-delay: 0.05s;">
+    <view class="setting-item" bindtap="onExport">
+      <view class="setting-left">
+        <view class="setting-icon-box" style="background: #E8F8F0;">
+          <text class="si">📤</text>
+        </view>
+        <text class="setting-name">导出数据</text>
+      </view>
+      <view class="setting-right">
+        <text class="setting-hint">{{recordCount}} 条记录</text>
+        <text class="setting-arrow">›</text>
+      </view>
+    </view>
+    <view class="setting-divider-compact"></view>
+    <view class="setting-item" bindtap="onImport">
+      <view class="setting-left">
+        <view class="setting-icon-box" style="background: #EBF5FB;">
+          <text class="si">📥</text>
+        </view>
+        <text class="setting-name">导入数据</text>
+      </view>
+      <view class="setting-right">
+        <text class="setting-arrow">›</text>
+      </view>
+    </view>
+    <view class="setting-divider-compact"></view>
+    <view class="setting-item" bindtap="onClearData">
+      <view class="setting-left">
+        <view class="setting-icon-box" style="background: #FDE8E8;">
+          <text class="si">🗑️</text>
+        </view>
+        <text class="setting-name danger-text">清空所有数据</text>
+      </view>
+      <view class="setting-right">
+        <text class="setting-arrow">›</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 关于 - 合并为一个大卡片 -->
+  <view class="section-label">关于</view>
+  <view class="settings-card card anim-fade-in-up" style="animation-delay: 0.1s;">
+    <view class="setting-item">
+      <view class="setting-left">
+        <view class="setting-icon-box" style="background: #F0FAF8;">
+          <text class="si">📱</text>
+        </view>
+        <text class="setting-name">应用名称</text>
+      </view>
+      <text class="setting-value">口袋账本</text>
+    </view>
+    <view class="setting-divider-compact"></view>
+    <view class="setting-item">
+      <view class="setting-left">
+        <view class="setting-icon-box" style="background: #F5F5F5;">
+          <text class="si">🏷️</text>
+        </view>
+        <text class="setting-name">版本</text>
+      </view>
+      <text class="setting-value">v1.0.0</text>
+    </view>
+    <view class="setting-divider-compact"></view>
+    <view class="setting-item">
+      <view class="setting-left">
+        <view class="setting-icon-box" style="background: #E8F6F4;">
+          <text class="si">🔒</text>
+        </view>
+        <text class="setting-name">数据存储</text>
+      </view>
+      <text class="setting-value">仅本地</text>
+    </view>
+  </view>
+
+  <view class="app-footer">
+    <text class="footer-text">所有数据仅保存在设备本地，不会上传到任何服务器</text>
+  </view>
+
+  <view class="page-bottom-space"></view>
+</view>

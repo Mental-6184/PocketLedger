@@ -1,0 +1,94 @@
+<!--
+  订阅管理页 - 订阅列表、到期提醒
+-->
+<view class="container">
+  <!-- 概览 -->
+  <view class="overview card anim-fade-in-up" wx:if="{{subs.length > 0}}">
+    <view class="flex-between">
+      <text class="card-title" style="margin-bottom:0">订阅概览</text>
+      <text class="text-sm text-secondary">共 {{subs.length}} 个订阅</text>
+    </view>
+    <view class="overview-stats mt-md">
+      <view class="stat-box">
+        <text class="stat-label">月均花费</text>
+        <text class="stat-value amount-expense">{{currency}}{{monthlyCost}}</text>
+      </view>
+      <view class="stat-box">
+        <text class="stat-label">年均花费</text>
+        <text class="stat-value amount-expense">{{currency}}{{yearlyCost}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 即将到期 -->
+  <view class="section" wx:if="{{expiringSubs.length > 0}}">
+    <text class="section-title">⚠️ 即将到期</text>
+    <view class="sub-card card" wx:for="{{expiringSubs}}" wx:key="id"
+          style="animation-delay: {{index < 3 ? index * 0.05 : 0}}s;">
+      <view class="flex-between">
+        <view class="flex-row">
+          <text class="sub-name">{{item.name}}</text>
+          <text class="tag tag-warning" wx:if="{{item.daysLeft <= 0}}">今日扣费</text>
+          <text class="tag tag-warning" wx:elif="{{item.daysLeft <= item.remindDays}}">{{item.daysLeft}}天后扣费</text>
+        </view>
+        <view class="text-right">
+          <text class="amount amount-expense block">{{item.currencySymbol}}{{item.amountFormatted}}</text>
+          <text class="text-xs text-secondary cny-convert" wx:if="{{item.showConversion}}">≈{{currency}}{{item.cnyAmountFormatted}}</text>
+        </view>
+      </view>
+      <view class="flex-between mt-sm">
+        <text class="text-xs text-secondary">{{item.cycleName}} · 下次 {{item.nextDateFormatted}}</text>
+        <view class="flex-row" style="gap: 16rpx;">
+          <text class="action-link" bindtap="onRenew" data-id="{{item.id}}">续费</text>
+          <text class="action-link" bindtap="goEdit" data-id="{{item.id}}">编辑</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 全部订阅 -->
+  <view class="section">
+    <text class="section-title">全部订阅</text>
+
+    <view wx:if="{{subs.length === 0}}" class="empty-state">
+      <text class="empty-icon">🔔</text>
+      <text class="empty-text">还没有订阅项目</text>
+      <button class="btn btn-primary btn-sm" bindtap="goAdd">新增订阅</button>
+    </view>
+
+    <view class="sub-card card" wx:for="{{subs}}" wx:key="id">
+      <view class="flex-between">
+        <view class="flex-row flex-1">
+          <view class="sub-status {{item.enabled ? 'active' : 'inactive'}}"></view>
+          <view class="flex-1">
+            <view class="flex-row">
+              <text class="sub-name">{{item.name}}</text>
+              <text class="tag tag-income" wx:if="{{item.spreadYearly}}" style="margin-left:8rpx;font-size:20rpx;">已均摊</text>
+            </view>
+            <text class="text-xs text-secondary block mt-sm">{{item.cycleName}} · {{item.note || '无备注'}}</text>
+          </view>
+        </view>
+        <view class="text-right">
+          <text class="amount amount-expense block">{{item.currencySymbol}}{{item.amountFormatted}}</text>
+          <text class="text-xs text-secondary block cny-convert" wx:if="{{item.showConversion}}">≈{{currency}}{{item.cnyAmountFormatted}}</text>
+          <text class="text-xs text-secondary block mt-sm">{{item.nextDateFormatted}}</text>
+        </view>
+      </view>
+      <view class="sub-actions flex-between mt-md">
+        <text class="text-xs text-secondary">{{item.remindDays ? '提前'+item.remindDays+'天提醒' : '不提醒'}}</text>
+        <view class="flex-row" style="gap: 16rpx;">
+          <text class="action-link" bindtap="toggleEnabled" data-id="{{item.id}}">{{item.enabled ? '暂停' : '启用'}}</text>
+          <text class="action-link" bindtap="goEdit" data-id="{{item.id}}">编辑</text>
+          <text class="action-link danger" bindtap="onDelete" data-id="{{item.id}}">删除</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 悬浮添加按钮 -->
+  <view class="fab" bindtap="goAdd">
+    <text class="fab-icon">+</text>
+  </view>
+
+  <view class="page-bottom-space"></view>
+</view>

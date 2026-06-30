@@ -1,0 +1,222 @@
+/**
+ * 设置页样式 - 大通栏卡片设计
+ */
+
+.container {
+  padding: 24rpx 32rpx;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* 分组标签 */
+.section-label {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 2rpx;
+  margin: 32rpx 0 16rpx 8rpx;
+}
+
+.section-label:first-child {
+  margin-top: 8rpx;
+}
+
+/* 设置卡片 - 大通栏 */
+.settings-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+/* 设置项 */
+.setting-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx 32rpx;
+  min-height: 96rpx;
+  transition: background-color 0.15s ease;
+}
+
+.setting-item:active {
+  background-color: var(--color-bg);
+}
+
+.setting-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.setting-icon-box {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+
+.setting-icon-box .si {
+  font-size: 32rpx;
+}
+
+.setting-name {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.danger-text {
+  color: var(--color-expense);
+}
+
+.setting-right {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.setting-value {
+  font-size: 28rpx;
+  color: var(--color-text-secondary);
+  margin-right: 8rpx;
+}
+
+.setting-hint {
+  font-size: 26rpx;
+  color: var(--color-text-light);
+  margin-right: 8rpx;
+}
+
+.setting-arrow {
+  font-size: 36rpx;
+  color: var(--color-text-light);
+  line-height: 1;
+}
+
+/* 极细分割线 - 低透明度 */
+.setting-divider {
+  height: 1rpx;
+  background: rgba(0, 0, 0, 0.06);
+  margin-left: 120rpx;
+}
+
+/* 紧凑分割线 - 用于同组内 */
+.setting-divider-compact {
+  height: 1rpx;
+  background: rgba(0, 0, 0, 0.04);
+  margin-left: 120rpx;
+}
+
+/* 预算输入 */
+.budget-input {
+  display: flex;
+  align-items: center;
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+  border: 2rpx solid var(--color-border);
+  padding: 0 20rpx;
+  height: 64rpx;
+  width: 240rpx;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.budget-input:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4rpx rgba(42, 161, 152, 0.12);
+}
+
+.budget-currency {
+  font-size: 26rpx;
+  color: var(--color-text-secondary);
+  margin-right: 8rpx;
+}
+
+.budget-field {
+  flex: 1;
+  font-size: 28rpx;
+  height: 64rpx;
+  text-align: right;
+}
+
+/* 货币选择面板 */
+.currency-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  animation: fadeIn 0.15s ease-out;
+  will-change: opacity;
+}
+
+.currency-sheet {
+  width: 100%;
+  background: var(--color-card);
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 40rpx 32rpx;
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+  animation: slideUp 0.25s ease-out;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.currency-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  text-align: center;
+  display: block;
+  margin-bottom: 32rpx;
+}
+
+.currency-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx;
+  justify-content: center;
+}
+
+.currency-item {
+  width: 140rpx;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+  border: 2rpx solid var(--color-border);
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.currency-item.active {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* 底部说明 */
+.app-footer {
+  text-align: center;
+  padding: 48rpx 40rpx 16rpx;
+}
+
+.footer-text {
+  font-size: 22rpx;
+  color: var(--color-text-light);
+  line-height: 1.6;
+}

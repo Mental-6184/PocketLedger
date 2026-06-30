@@ -1,0 +1,171 @@
+/**
+ * 记账列表页样式
+ */
+
+.container {
+  padding: 24rpx 32rpx;
+  padding-bottom: 120rpx;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* 筛选栏 */
+.filter-bar {
+  padding: 24rpx;
+}
+
+.filter-month {
+  padding: 8rpx 20rpx;
+  background: var(--color-primary-light);
+  border-radius: var(--radius-md);
+}
+
+.filter-icon {
+  font-size: 28rpx;
+  margin-right: 8rpx;
+}
+
+.filter-text {
+  font-size: 26rpx;
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.filter-arrow {
+  font-size: 22rpx;
+  color: var(--color-primary);
+  margin-left: 8rpx;
+}
+
+.month-picker-trigger {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.filter-type {
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+  padding: 4rpx;
+}
+
+.type-tab {
+  padding: 8rpx 24rpx;
+  font-size: 24rpx;
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-sm);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.type-tab.active {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+/* 分类筛选 */
+.category-scroll {
+  white-space: nowrap;
+  margin: var(--spacing-sm) 0;
+}
+
+.category-chip {
+  display: inline-block;
+  padding: 8rpx 24rpx;
+  margin-right: 16rpx;
+  font-size: 24rpx;
+  color: var(--color-text-secondary);
+  background: var(--color-card);
+  border-radius: 32rpx;
+  border: 2rpx solid var(--color-border);
+}
+
+.category-chip.active {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+/* 记录分组 */
+.record-group {
+  margin-bottom: var(--spacing-md);
+}
+
+.group-header {
+  padding: 16rpx 0;
+}
+
+.group-date {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* 记录行 */
+.record-row {
+  padding: 24rpx;
+  border-bottom: 1rpx solid var(--color-divider);
+}
+
+.record-row:last-child {
+  border-bottom: none;
+}
+
+.record-icon-wrap {
+  width: 68rpx;
+  height: 68rpx;
+  border-radius: 50%;
+  background: var(--color-primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.record-icon {
+  font-size: 32rpx;
+}
+
+.record-cat-name {
+  font-size: 28rpx;
+  font-weight: 500;
+  display: block;
+}
+
+.record-note {
+  display: block;
+  margin-top: 4rpx;
+  max-width: 300rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.record-amount {
+  font-size: 30rpx;
+  flex-shrink: 0;
+  margin-left: 16rpx;
+}
+
+/* 悬浮按钮 */
+.fab {
+  position: fixed;
+  right: 40rpx;
+  bottom: 200rpx;
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(42, 161, 152, 0.4);
+  z-index: 100;
+}
+
+.fab-icon {
+  font-size: 52rpx;
+  font-weight: 300;
+  line-height: 1;
+}

@@ -1,0 +1,86 @@
+<!--
+  记账列表页 - 支持月份筛选、分类筛选、删除
+-->
+<view class="container">
+  <!-- 筛选栏 -->
+  <view class="filter-bar card anim-fade-in-up">
+    <view class="filter-row flex-between">
+      <view class="filter-month flex-row" bindtap="showMonthPicker">
+        <text class="filter-icon">📅</text>
+        <text class="filter-text">{{currentMonthCN}}</text>
+        <text class="filter-arrow">▾</text>
+      </view>
+      <picker mode="date" fields="month" value="{{currentMonth}}" bindchange="onMonthChange">
+        <view class="month-picker-trigger"></view>
+      </picker>
+      <view class="filter-type flex-row">
+        <view class="type-tab {{filterType === 'all' ? 'active' : ''}}" bindtap="setFilterType" data-type="all">全部</view>
+        <view class="type-tab {{filterType === 'expense' ? 'active' : ''}}" bindtap="setFilterType" data-type="expense">支出</view>
+        <view class="type-tab {{filterType === 'income' ? 'active' : ''}}" bindtap="setFilterType" data-type="income">收入</view>
+      </view>
+    </view>
+
+    <!-- 月度小结 -->
+    <view class="month-summary flex-between mt-md">
+      <text class="text-sm text-secondary">共 {{filteredRecords.length}} 笔</text>
+      <view class="flex-row" style="gap: 24rpx;">
+        <text class="text-sm">收 <text class="amount-income">{{currency}}{{monthIncome}}</text></text>
+        <text class="text-sm">支 <text class="amount-expense">{{currency}}{{monthExpense}}</text></text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 分类筛选 -->
+  <scroll-view class="category-scroll" scroll-x enable-flex wx:if="{{filterType !== 'all'}}">
+    <view class="category-chip {{filterCategory === '' ? 'active' : ''}}" bindtap="setFilterCategory" data-cat="">全部</view>
+    <view class="category-chip {{filterCategory === item.id ? 'active' : ''}}"
+          wx:for="{{currentCategories}}" wx:key="id"
+          bindtap="setFilterCategory" data-cat="{{item.id}}">
+      {{item.icon}} {{item.name}}
+    </view>
+  </scroll-view>
+
+  <!-- 记录列表 -->
+  <view class="record-list" wx:if="{{filteredRecords.length > 0}}">
+    <view class="record-group anim-fade-in-up" wx:for="{{groupedRecords}}" wx:key="date"
+          style="animation-delay: {{index < 3 ? index * 0.05 : 0}}s;">
+      <view class="group-header flex-between">
+        <text class="group-date">{{item.dateFormatted}}</text>
+        <text class="text-xs text-secondary">{{item.dayTotal}}</text>
+      </view>
+      <view class="card" style="padding: 0;">
+        <view class="record-row flex-between"
+              wx:for="{{item.records}}" wx:for-item="rec" wx:key="id"
+              bindtap="goEdit" data-id="{{rec.id}}"
+              bindlongpress="onLongPress" data-id="{{rec.id}}">
+          <view class="flex-row flex-1">
+            <view class="record-icon-wrap">
+              <text class="record-icon">{{rec.categoryIcon}}</text>
+            </view>
+            <view class="record-info flex-1">
+              <text class="record-cat-name">{{rec.categoryName}}</text>
+              <text class="record-note text-xs text-secondary" wx:if="{{rec.note}}">{{rec.note}}</text>
+            </view>
+          </view>
+          <text class="record-amount amount {{rec.type === 'income' ? 'amount-income' : 'amount-expense'}}">
+            {{rec.type === 'income' ? '+' : '-'}}{{currency}}{{rec.amountFormatted}}
+          </text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:else>
+    <text class="empty-icon">📝</text>
+    <text class="empty-text">该月份暂无记录</text>
+    <button class="btn btn-primary btn-sm" bindtap="goAdd">记一笔</button>
+  </view>
+
+  <!-- 悬浮添加按钮 -->
+  <view class="fab" bindtap="goAdd">
+    <text class="fab-icon">+</text>
+  </view>
+
+  <view class="page-bottom-space"></view>
+</view>
