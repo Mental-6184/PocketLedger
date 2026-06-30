@@ -1,5 +1,5 @@
 /**
- * 统计页 - 月度统计、分类占比、趋势图
+ * 统计页 - 月度统计、分类占比、趋势图、账户统计
  */
 const storage = require('../../utils/storage')
 const util = require('../../utils/util')
@@ -28,7 +28,9 @@ Page({
     categoryStats: [],
     trendData: [],
     chartLines: [0, 25, 50, 75, 100],
-    chartLineLabels: []
+    chartLineLabels: [],
+    accountStats: [],
+    refundStats: null
   },
 
   onShow() {
@@ -76,6 +78,13 @@ Page({
       chartLineLabels.push(this.formatShortAmount(step * i))
     }
 
+    // 账户统计
+    const accounts = storage.getAccounts()
+    const accountStats = util.getAccountStats(records, accounts, currentMonth)
+
+    // 退款/报销统计
+    const refundStats = util.getRefundStats(records, currentMonth)
+
     this.setData({
       stats: {
         income: stats.income,
@@ -90,7 +99,9 @@ Page({
       expenseRatioText: String(expenseRatio),
       categoryStats,
       trendData,
-      chartLineLabels
+      chartLineLabels,
+      accountStats,
+      refundStats
     })
   },
 

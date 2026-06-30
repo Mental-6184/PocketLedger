@@ -34,7 +34,10 @@ Page({
     calendarMonthCN: '',
     billingDateMap: {},
     selectedDate: '',
-    selectedDateBills: []
+    selectedDateBills: [],
+    // 待报销
+    pendingReimburseCount: 0,
+    pendingReimburseAmount: '0.00'
   },
 
   onShow() {
@@ -109,6 +112,9 @@ Page({
     const availableBudget = budget > 0 ? budget - stats.expense - subscriptionReserved : 0
     const budgetWithSub = budget > 0 ? Math.round(((stats.expense + subscriptionReserved) / budget) * 100) : 0
 
+    // 待报销统计
+    const refundStats = util.getRefundStats(records, currentMonth)
+
     this.setData({
       currentMonthCN: util.formatMonthCN(currentMonth),
       incomeFormatted: util.formatAmount(stats.income),
@@ -130,7 +136,9 @@ Page({
       availableBudget: util.formatAmount(Math.abs(availableBudget)),
       availableBudgetPositive: availableBudget >= 0,
       budgetWithSub: budgetWithSub > 100 ? 100 : budgetWithSub,
-      showBudgetDetail: budget > 0 && subscriptionReserved > 0
+      showBudgetDetail: budget > 0 && subscriptionReserved > 0,
+      pendingReimburseCount: refundStats.pendingCount,
+      pendingReimburseAmount: refundStats.pendingAmountFormatted
     })
 
     // 构建扣款日历

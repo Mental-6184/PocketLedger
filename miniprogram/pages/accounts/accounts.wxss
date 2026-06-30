@@ -1,0 +1,165 @@
+/**
+ * 账户管理页样式
+ */
+
+.container {
+  padding: 32rpx;
+  padding-bottom: 120rpx;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* 总资产概览 */
+.overview-card {
+  text-align: center;
+  padding: 40rpx 32rpx;
+  background: linear-gradient(135deg, #2AA198 0%, #1E8A82 100%);
+  color: #fff;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8rpx 24rpx rgba(42, 161, 152, 0.3);
+}
+
+.overview-label {
+  font-size: 26rpx;
+  opacity: 0.85;
+  display: block;
+  margin-bottom: 12rpx;
+}
+
+.overview-balance {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  margin-bottom: 12rpx;
+}
+
+.overview-balance .currency-sym {
+  font-size: 36rpx;
+  margin-right: 4rpx;
+  opacity: 0.9;
+}
+
+.balance-value {
+  font-size: 60rpx;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+}
+
+.overview-hint {
+  opacity: 0.7;
+  color: #fff;
+}
+
+/* 区块 */
+.section {
+  margin-top: var(--spacing-lg);
+}
+
+.section-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: var(--spacing-md);
+  display: block;
+}
+
+/* 账户卡片 */
+.account-card {
+  padding: 24rpx;
+  margin-bottom: var(--spacing-md);
+}
+
+.account-card-main {
+  align-items: center;
+}
+
+.account-info {
+  align-items: center;
+  flex: 1;
+}
+
+.account-icon {
+  font-size: 48rpx;
+  margin-right: 20rpx;
+  width: 64rpx;
+  text-align: center;
+}
+
+.account-detail {
+  display: flex;
+  flex-direction: column;
+}
+
+.account-name {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.account-type {
+  margin-top: 4rpx;
+}
+
+.account-balance-area {
+  text-align: right;
+}
+
+.account-balance {
+  font-size: 34rpx;
+  font-weight: 700;
+  display: block;
+}
+
+.exclude-tag {
+  color: var(--color-text-light);
+  margin-top: 4rpx;
+  display: block;
+}
+
+/* 本月收支行 */
+.account-month {
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid var(--color-border);
+}
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: 120rpx 40rpx;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  display: block;
+  margin-bottom: 20rpx;
+}
+
+.empty-text {
+  font-size: 30rpx;
+  color: var(--color-text-secondary);
+  display: block;
+  margin-bottom: 12rpx;
+}
+
+/* 悬浮按钮 */
+.fab {
+  position: fixed;
+  right: 40rpx;
+  bottom: 120rpx;
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(42, 161, 152, 0.4);
+  z-index: 100;
+}
+
+.fab-icon {
+  font-size: 52rpx;
+  font-weight: 300;
+  line-height: 1;
+}

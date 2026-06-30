@@ -11,6 +11,7 @@ Page({
     currencyOptions: ['¥', '$', '€', '£', '₩', '₹'],
     recordCount: 0,
     subCount: 0,
+    accountCount: 0,
     showCurrency: false
   },
 
@@ -22,12 +23,14 @@ Page({
     const settings = storage.getSettings()
     const records = storage.getRecords()
     const subs = storage.getSubscriptions()
+    const accounts = storage.getAccounts()
 
     this.setData({
       budgetInput: settings.monthlyBudget ? String(settings.monthlyBudget) : '',
       currency: settings.currency || '¥',
       recordCount: records.length,
-      subCount: subs.length
+      subCount: subs.length,
+      accountCount: accounts.length
     })
   },
 
@@ -62,6 +65,10 @@ Page({
 
   goSubscription() {
     wx.navigateTo({ url: '/pages/subscription/subscription' })
+  },
+
+  goAccounts() {
+    wx.navigateTo({ url: '/pages/accounts/accounts' })
   },
 
   onExport() {

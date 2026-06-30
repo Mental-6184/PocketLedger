@@ -651,3 +651,26 @@
   border-top: 1rpx solid var(--color-divider);
   text-align: center;
 }
+
+/* 待报销提示 */
+.reimburse-hint {
+  padding: 20rpx 24rpx;
+  border-left: 6rpx solid #E67E22;
+}
+
+.reimburse-hint-icon {
+  font-size: 32rpx;
+  margin-right: 12rpx;
+}
+
+.reimburse-hint-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.reimburse-hint-arrow {
+  font-size: 26rpx;
+  color: var(--color-primary);
+  font-weight: 500;
+}

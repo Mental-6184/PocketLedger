@@ -6,7 +6,9 @@
     "pages/settings/settings",
     "pages/record/record",
     "pages/subscription/subscription",
-    "pages/sub-edit/sub-edit"
+    "pages/sub-edit/sub-edit",
+    "pages/accounts/accounts",
+    "pages/account-edit/account-edit"
   ],
   "window": {
     "navigationBarTextStyle": "white",

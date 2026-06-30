@@ -129,7 +129,35 @@
 .record-cat-name {
   font-size: 28rpx;
   font-weight: 500;
-  display: block;
+}
+
+.record-name-row {
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8rpx;
+}
+
+.record-account-tag {
+  color: var(--color-text-light);
+  background: var(--color-bg);
+  padding: 2rpx 10rpx;
+  border-radius: 8rpx;
+}
+
+.record-reimburse-tag {
+  padding: 2rpx 10rpx;
+  border-radius: 8rpx;
+  font-weight: 500;
+}
+
+.record-reimburse-tag.pending {
+  color: #E67E22;
+  background: rgba(230, 126, 34, 0.1);
+}
+
+.record-reimburse-tag.reimbursed {
+  color: var(--color-income);
+  background: rgba(39, 174, 96, 0.1);
 }
 
 .record-note {

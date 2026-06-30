@@ -58,7 +58,12 @@
               <text class="record-icon">{{rec.categoryIcon}}</text>
             </view>
             <view class="record-info flex-1">
-              <text class="record-cat-name">{{rec.categoryName}}</text>
+              <view class="record-name-row flex-row">
+                <text class="record-cat-name">{{rec.categoryName}}</text>
+                <text class="record-account-tag text-xs" wx:if="{{rec.accountName}}">{{rec.accountIcon}} {{rec.accountName}}</text>
+                <text class="record-reimburse-tag text-xs pending" wx:if="{{rec.reimbursementStatus === 'pending'}}">待报销</text>
+                <text class="record-reimburse-tag text-xs reimbursed" wx:if="{{rec.reimbursementStatus === 'reimbursed'}}">已报销</text>
+              </view>
               <text class="record-note text-xs text-secondary" wx:if="{{rec.note}}">{{rec.note}}</text>
             </view>
           </view>

@@ -1,0 +1,61 @@
+<!--
+  账户管理页 - 账户列表、总资产、添加/编辑/删除
+-->
+<view class="container">
+  <!-- 总资产概览 -->
+  <view class="card overview-card anim-fade-in-up">
+    <text class="overview-label">总资产</text>
+    <view class="overview-balance">
+      <text class="currency-sym">{{currency}}</text>
+      <text class="balance-value">{{totalBalance}}</text>
+    </view>
+    <text class="overview-hint text-xs text-secondary">仅统计"计入总资产"的账户</text>
+  </view>
+
+  <!-- 账户列表 -->
+  <view class="section anim-fade-in-up" style="animation-delay: 0.05s;">
+    <view class="flex-between mb-md">
+      <text class="section-title" style="margin-bottom:0">我的账户</text>
+      <text class="text-xs text-secondary">{{accounts.length}} 个</text>
+    </view>
+
+    <view class="account-card card" wx:for="{{accounts}}" wx:key="id"
+          bindtap="goEdit" data-id="{{item.id}}">
+      <view class="account-card-main flex-between">
+        <view class="account-info flex-row">
+          <text class="account-icon">{{item.icon}}</text>
+          <view class="account-detail">
+            <text class="account-name">{{item.name}}</text>
+            <text class="account-type text-xs text-secondary">{{item.type === 'ewallet' ? '电子钱包' : item.type === 'debit' ? '储蓄卡' : item.type === 'credit' ? '信用卡' : '现金'}}</text>
+          </view>
+        </view>
+        <view class="account-balance-area">
+          <text class="account-balance {{item.balance >= 0 ? 'amount-income' : 'amount-expense'}}">{{currency}}{{item.balanceFormatted}}</text>
+          <view wx:if="{{item.includeInTotal === false}}" class="exclude-tag text-xs">不计入总资产</view>
+        </view>
+      </view>
+      <!-- 本月收支（有数据时显示） -->
+      <view class="account-month" wx:if="{{item.hasActivity}}">
+        <text class="text-xs text-secondary">本月：</text>
+        <text class="text-xs amount-income" wx:if="{{item.monthIncomeFormatted !== '0.00'}}">收 {{currency}}{{item.monthIncomeFormatted}}</text>
+        <text class="text-xs text-secondary" wx:if="{{item.monthIncomeFormatted !== '0.00' && item.monthExpenseFormatted !== '0.00'}}"> · </text>
+        <text class="text-xs amount-expense" wx:if="{{item.monthExpenseFormatted !== '0.00'}}">支 {{currency}}{{item.monthExpenseFormatted}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{accounts.length === 0}}">
+    <text class="empty-icon">💳</text>
+    <text class="empty-text">暂无账户</text>
+    <text class="text-sm text-secondary">点击右下角 + 添加你的第一个账户</text>
+  </view>
+
+  <!-- 底部留白 -->
+  <view class="page-bottom-space"></view>
+</view>
+
+<!-- 添加按钮 -->
+<view class="fab" bindtap="goAdd">
+  <text class="fab-icon">+</text>
+</view>

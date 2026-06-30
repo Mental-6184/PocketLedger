@@ -83,6 +83,52 @@
     </view>
   </view>
 
+  <!-- 退款/报销统计 -->
+  <view class="card" wx:if="{{refundStats && (refundStats.pendingCount > 0 || refundStats.linkedRefundAmount > 0)}}" style="animation-delay: 0.12s;">
+    <text class="card-title">退款 / 报销</text>
+    <view class="refund-grid">
+      <view class="refund-item" wx:if="{{refundStats.pendingCount > 0}}">
+        <text class="refund-label">待报销</text>
+        <view class="refund-value-area">
+          <text class="refund-value amount-expense">{{currency}}{{refundStats.pendingAmountFormatted}}</text>
+          <text class="refund-count text-xs text-secondary">{{refundStats.pendingCount}} 笔</text>
+        </view>
+      </view>
+      <view class="refund-item" wx:if="{{refundStats.linkedRefundAmount > 0}}">
+        <text class="refund-label">已冲抵退款</text>
+        <view class="refund-value-area">
+          <text class="refund-value amount-income">{{currency}}{{refundStats.linkedRefundAmountFormatted}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 账户收支 -->
+  <view class="card" wx:if="{{accountStats.length > 0}}" style="animation-delay: 0.13s;">
+    <view class="flex-between mb-md">
+      <text class="card-title" style="margin-bottom:0">账户收支</text>
+      <text class="text-xs text-secondary">共 {{accountStats.length}} 个</text>
+    </view>
+    <view class="account-stat-list">
+      <view class="account-stat-item" wx:for="{{accountStats}}" wx:key="account.id">
+        <view class="account-stat-header flex-between">
+          <view class="flex-row">
+            <text class="account-stat-icon">{{item.account.icon}}</text>
+            <text class="account-stat-name">{{item.account.name}}</text>
+          </view>
+          <text class="account-stat-net {{item.net >= 0 ? 'amount-income' : 'amount-expense'}}">
+            {{item.net >= 0 ? '+' : '-'}}{{currency}}{{item.netFormatted}}
+          </text>
+        </view>
+        <view class="account-stat-detail flex-row">
+          <text class="text-xs text-secondary" wx:if="{{item.incomeFormatted !== '0.00'}}">收 {{currency}}{{item.incomeFormatted}}</text>
+          <text class="text-xs text-secondary" wx:if="{{item.incomeFormatted !== '0.00' && item.expenseFormatted !== '0.00'}}"> · </text>
+          <text class="text-xs text-secondary" wx:if="{{item.expenseFormatted !== '0.00'}}">支 {{currency}}{{item.expenseFormatted}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
   <!-- 趋势图 -->
   <view class="card" wx:if="{{trendData.length > 0}}" style="animation-delay: 0.15s;">
     <view class="flex-between mb-md">

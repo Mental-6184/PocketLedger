@@ -48,6 +48,22 @@ const CURRENCIES = [
   { code: 'KRW', name: '韩元', symbol: '₩' }
 ]
 
+// 账户类型
+const ACCOUNT_TYPES = [
+  { id: 'ewallet', name: '电子钱包', icon: '📱' },
+  { id: 'debit', name: '储蓄卡', icon: '💳' },
+  { id: 'credit', name: '信用卡', icon: '💎' },
+  { id: 'cash', name: '现金', icon: '💵' }
+]
+
+// 默认账户
+const DEFAULT_ACCOUNTS = [
+  { id: 'acc_wechat', name: '微信钱包', icon: '💬', type: 'ewallet', balance: 0, includeInTotal: true },
+  { id: 'acc_alipay', name: '支付宝', icon: '🔵', type: 'ewallet', balance: 0, includeInTotal: true },
+  { id: 'acc_bank', name: '储蓄卡', icon: '💳', type: 'debit', balance: 0, includeInTotal: true },
+  { id: 'acc_cash', name: '现金', icon: '💵', type: 'cash', balance: 0, includeInTotal: true }
+]
+
 // 默认设置
 const DEFAULT_SETTINGS = {
   monthlyBudget: 5000,
@@ -58,7 +74,8 @@ const DEFAULT_SETTINGS = {
 const STORAGE_KEYS = {
   RECORDS: 'pocket_records',
   SUBSCRIPTIONS: 'pocket_subscriptions',
-  SETTINGS: 'pocket_settings'
+  SETTINGS: 'pocket_settings',
+  ACCOUNTS: 'pocket_accounts'
 }
 
 module.exports = {
@@ -66,6 +83,8 @@ module.exports = {
   INCOME_CATEGORIES,
   SUBSCRIPTION_CYCLES,
   CURRENCIES,
+  ACCOUNT_TYPES,
+  DEFAULT_ACCOUNTS,
   DEFAULT_SETTINGS,
   STORAGE_KEYS
 }

@@ -56,14 +56,23 @@ Page({
       .filter(r => r.type === 'expense')
       .reduce((s, r) => s + (parseFloat(r.amount) || 0), 0)
 
+    // 账户映射
+    const accounts = storage.getAccounts()
+    const accountMap = {}
+    accounts.forEach(a => { accountMap[a.id] = a })
+
     // 格式化记录
     const formatted = filtered.map(r => {
       const catInfo = util.getCategoryInfo(r.category, r.type)
+      const account = r.accountId ? accountMap[r.accountId] : null
       return {
         ...r,
         amountFormatted: util.formatAmount(r.amount),
         categoryName: catInfo.name,
-        categoryIcon: catInfo.icon
+        categoryIcon: catInfo.icon,
+        accountName: account ? account.name : '',
+        accountIcon: account ? account.icon : '',
+        reimbursementStatus: r.reimbursementStatus || 'none'
       }
     })
 

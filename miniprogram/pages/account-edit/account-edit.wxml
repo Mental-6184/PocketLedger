@@ -1,0 +1,67 @@
+<!--
+  账户编辑页 - 新增/编辑账户
+-->
+<view class="container">
+  <!-- 图标 + 名称 -->
+  <view class="card header-card">
+    <view class="icon-preview" bindtap="toggleIconPicker">
+      <text class="icon-value">{{form.icon}}</text>
+      <text class="icon-hint text-xs text-secondary">点击换图标</text>
+    </view>
+    <input class="name-input" placeholder="账户名称（如：微信钱包）" value="{{form.name}}" bindinput="onNameInput" maxlength="20" />
+  </view>
+
+  <!-- 账户类型 -->
+  <view class="card">
+    <text class="form-label">账户类型</text>
+    <view class="type-grid">
+      <view class="type-item {{selectedType === item.id ? 'active' : ''}}"
+            wx:for="{{accountTypes}}" wx:key="id"
+            bindtap="selectType" data-id="{{item.id}}">
+        <text class="type-icon">{{item.icon}}</text>
+        <text class="type-name">{{item.name}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 余额 -->
+  <view class="card">
+    <text class="form-label">当前余额</text>
+    <view class="balance-input-row">
+      <text class="balance-currency">{{currency}}</text>
+      <input class="balance-input" type="digit" placeholder="0.00" value="{{form.balance}}" bindinput="onBalanceInput" />
+    </view>
+    <text class="text-xs text-secondary" style="margin-top: 8rpx; display: block;">信用卡可输入负数（如欠款金额）</text>
+  </view>
+
+  <!-- 计入总资产 -->
+  <view class="card setting-row">
+    <view class="setting-info">
+      <text class="setting-label">计入总资产</text>
+      <text class="text-xs text-secondary">关闭后此账户余额不计入首页总资产</text>
+    </view>
+    <switch checked="{{form.includeInTotal}}" bindchange="onIncludeChange" color="#2AA198" />
+  </view>
+
+  <!-- 保存按钮 -->
+  <view class="save-section">
+    <button class="btn btn-primary btn-block" bindtap="onSave">{{isNew ? '添加账户' : '保存修改'}}</button>
+    <button class="btn btn-outline btn-block mt-md" wx:if="{{!isNew}}" bindtap="onDelete">删除账户</button>
+  </view>
+</view>
+
+<!-- 图标选择弹窗 -->
+<view class="icon-mask" wx:if="{{showIconPicker}}" bindtap="closeIconPicker">
+  <view class="icon-modal" catchtap="preventBubble">
+    <view class="icon-modal-header">
+      <text class="icon-modal-title">选择图标</text>
+    </view>
+    <view class="icon-grid">
+      <view class="icon-item {{form.icon === item ? 'active' : ''}}"
+            wx:for="{{icons}}" wx:key="*this"
+            bindtap="selectIcon" data-icon="{{item}}">
+        <text>{{item}}</text>
+      </view>
+    </view>
+  </view>
+</view>

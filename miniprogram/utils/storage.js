@@ -84,6 +84,52 @@ function deleteSubscription(id) {
   return filtered.length < subs.length
 }
 
+// ==================== 账户 ====================
+
+function getAccounts() {
+  let accounts = wx.getStorageSync(STORAGE_KEYS.ACCOUNTS)
+  if (!accounts || accounts.length === 0) {
+    // 首次使用，初始化默认账户
+    const { DEFAULT_ACCOUNTS } = require('./constants')
+    accounts = DEFAULT_ACCOUNTS.map(a => ({ ...a, createdAt: Date.now() }))
+    saveAccounts(accounts)
+  }
+  return accounts
+}
+
+function saveAccounts(accounts) {
+  wx.setStorageSync(STORAGE_KEYS.ACCOUNTS, accounts)
+}
+
+function addAccount(account) {
+  const accounts = getAccounts()
+  account.id = generateId()
+  account.createdAt = Date.now()
+  account.balance = account.balance || 0
+  account.includeInTotal = account.includeInTotal !== false
+  accounts.push(account)
+  saveAccounts(accounts)
+  return account
+}
+
+function updateAccount(id, data) {
+  const accounts = getAccounts()
+  const index = accounts.findIndex(a => a.id === id)
+  if (index > -1) {
+    accounts[index] = { ...accounts[index], ...data }
+    saveAccounts(accounts)
+    return accounts[index]
+  }
+  return null
+}
+
+function deleteAccount(id) {
+  const accounts = getAccounts()
+  const filtered = accounts.filter(a => a.id !== id)
+  saveAccounts(filtered)
+  return filtered.length < accounts.length
+}
+
 // ==================== 设置 ====================
 
 function getSettings() {
@@ -106,10 +152,11 @@ function updateSettings(data) {
 
 function exportAllData() {
   return {
-    version: '1.0.0',
+    version: '1.1.0',
     exportTime: new Date().toISOString(),
     records: getRecords(),
     subscriptions: getSubscriptions(),
+    accounts: getAccounts(),
     settings: getSettings()
   }
 }
@@ -120,6 +167,7 @@ function importAllData(data) {
   }
   if (data.records) saveRecords(data.records)
   if (data.subscriptions) saveSubscriptions(data.subscriptions)
+  if (data.accounts) saveAccounts(data.accounts)
   if (data.settings) saveSettings(data.settings)
   return { success: true, msg: '导入成功' }
 }
@@ -127,6 +175,7 @@ function importAllData(data) {
 function clearAllData() {
   wx.removeStorageSync(STORAGE_KEYS.RECORDS)
   wx.removeStorageSync(STORAGE_KEYS.SUBSCRIPTIONS)
+  wx.removeStorageSync(STORAGE_KEYS.ACCOUNTS)
   wx.removeStorageSync(STORAGE_KEYS.SETTINGS)
 }
 
@@ -134,6 +183,7 @@ module.exports = {
   generateId,
   getRecords, saveRecords, addRecord, updateRecord, deleteRecord,
   getSubscriptions, saveSubscriptions, addSubscription, updateSubscription, deleteSubscription,
+  getAccounts, saveAccounts, addAccount, updateAccount, deleteAccount,
   getSettings, saveSettings, updateSettings,
   exportAllData, importAllData, clearAllData
 }

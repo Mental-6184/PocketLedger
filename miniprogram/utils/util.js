@@ -342,6 +342,85 @@ function getCurrencySymbol(code) {
   return currency ? currency.symbol : '¥'
 }
 
+/**
+ * 按账户统计月度收支
+ * @param {Array} records - 所有记录
+ * @param {Array} accounts - 所有账户
+ * @param {string} month - YYYY-MM
+ * @returns {Array<{account, income, expense, net}>}
+ */
+function getAccountStats(records, accounts, month) {
+  const monthRecords = records.filter(r => r.date && r.date.startsWith(month) && r.accountId)
+  return accounts.map(acc => {
+    const accRecords = monthRecords.filter(r => r.accountId === acc.id)
+    const income = accRecords.filter(r => r.type === 'income').reduce((s, r) => s + (parseFloat(r.amount) || 0), 0)
+    const expense = accRecords.filter(r => r.type === 'expense').reduce((s, r) => s + (parseFloat(r.amount) || 0), 0)
+    return {
+      account: acc,
+      income,
+      expense,
+      net: income - expense,
+      incomeFormatted: formatAmount(income),
+      expenseFormatted: formatAmount(expense),
+      netFormatted: formatAmount(Math.abs(income - expense))
+    }
+  }).filter(s => s.income > 0 || s.expense > 0)
+}
+
+/**
+ * 计算退款/报销统计
+ * @param {Array} records - 所有记录
+ * @param {string} month - YYYY-MM
+ * @returns {{pendingAmount, reimbursedAmount, pendingCount, reimbursedCount, linkedRefundAmount}}
+ */
+function getRefundStats(records, month) {
+  const monthRecords = records.filter(r => r.date && r.date.startsWith(month))
+
+  // 待报销的支出
+  const pendingExpenses = monthRecords.filter(r => r.type === 'expense' && r.reimbursementStatus === 'pending')
+  const pendingAmount = pendingExpenses.reduce((s, r) => s + (parseFloat(r.amount) || 0), 0)
+
+  // 已报销的支出
+  const reimbursedExpenses = monthRecords.filter(r => r.type === 'expense' && r.reimbursementStatus === 'reimbursed')
+  const reimbursedAmount = reimbursedExpenses.reduce((s, r) => s + (parseFloat(r.amount) || 0), 0)
+
+  // 关联退款/报销的收入（linkedRecordId 存在的 refund 类型收入）
+  const linkedRefunds = monthRecords.filter(r => r.type === 'income' && r.linkedRecordId)
+  const linkedRefundAmount = linkedRefunds.reduce((s, r) => s + (parseFloat(r.amount) || 0), 0)
+
+  return {
+    pendingAmount,
+    reimbursedAmount,
+    pendingCount: pendingExpenses.length,
+    reimbursedCount: reimbursedExpenses.length,
+    linkedRefundAmount,
+    pendingAmountFormatted: formatAmount(pendingAmount),
+    reimbursedAmountFormatted: formatAmount(reimbursedAmount),
+    linkedRefundAmountFormatted: formatAmount(linkedRefundAmount)
+  }
+}
+
+/**
+ * 获取可报销的支出列表（当月及之前的未报销支出）
+ * @param {Array} records - 所有记录
+ * @param {string} beforeDate - YYYY-MM-DD，返回此日期及之前的记录
+ * @returns {Array} 可关联的支出记录
+ */
+function getLinkableExpenses(records, beforeDate) {
+  return records
+    .filter(r => r.type === 'expense' && r.reimbursementStatus === 'pending' && r.date <= beforeDate)
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .map(r => {
+      const catInfo = getCategoryInfo(r.category, r.type)
+      return {
+        ...r,
+        categoryName: catInfo.name,
+        categoryIcon: catInfo.icon,
+        amountFormatted: formatAmount(r.amount)
+      }
+    })
+}
+
 module.exports = {
   formatAmount, formatDate, formatDateCN, formatMonthCN,
   getCurrentMonth, getToday, padZero, daysBetween,
@@ -349,5 +428,6 @@ module.exports = {
   isSubExpiringSoon, isSubExpired,
   getMonthStats, getExpenseByCategory, debounce,
   getSubBillingDatesInMonth, calcEffectiveMonthlyCost,
-  getCalendarGrid, getCurrencySymbol
+  getCalendarGrid, getCurrencySymbol,
+  getAccountStats, getRefundStats, getLinkableExpenses
 }

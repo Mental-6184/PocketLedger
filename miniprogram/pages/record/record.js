@@ -14,11 +14,23 @@ Page({
       amount: '',
       category: '',
       date: '',
-      note: ''
+      note: '',
+      accountId: '',
+      reimbursementStatus: 'none',
+      linkedRecordId: ''
     },
     categories: EXPENSE_CATEGORIES,
     selectedCategory: '',
     currency: '¥',
+    // 账户选择
+    accounts: [],
+    selectedAccount: '',
+    selectedAccountName: '不指定',
+    showAccountPicker: false,
+    // 退款/报销
+    showLinkedPicker: false,
+    linkableExpenses: [],
+    linkedExpenseName: '',
     // 备注输入
     showNoteInput: false,
     // 键盘显示状态
@@ -27,7 +39,11 @@ Page({
 
   onLoad(options) {
     const settings = storage.getSettings()
-    this.setData({ currency: settings.currency || '¥' })
+    const accounts = storage.getAccounts()
+    this.setData({
+      currency: settings.currency || '¥',
+      accounts: accounts
+    })
 
     if (options.id) {
       // 编辑模式
@@ -35,6 +51,20 @@ Page({
       const record = records.find(r => r.id === options.id)
       if (record) {
         const categories = record.type === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES
+        const account = record.accountId ? accounts.find(a => a.id === record.accountId) : null
+        const reimbursementStatus = record.reimbursementStatus || 'none'
+        const linkedRecordId = record.linkedRecordId || ''
+
+        // 查找关联的原始支出名称
+        let linkedExpenseName = ''
+        if (linkedRecordId) {
+          const linked = records.find(r => r.id === linkedRecordId)
+          if (linked) {
+            const catInfo = util.getCategoryInfo(linked.category, linked.type)
+            linkedExpenseName = catInfo.icon + ' ' + catInfo.name + ' ¥' + util.formatAmount(linked.amount)
+          }
+        }
+
         this.setData({
           isNew: false,
           recordId: record.id,
@@ -43,10 +73,16 @@ Page({
             amount: String(record.amount),
             category: record.category,
             date: record.date,
-            note: record.note || ''
+            note: record.note || '',
+            accountId: record.accountId || '',
+            reimbursementStatus,
+            linkedRecordId
           },
           categories,
-          selectedCategory: record.category
+          selectedCategory: record.category,
+          selectedAccount: record.accountId || '',
+          selectedAccountName: account ? account.name : '不指定',
+          linkedExpenseName
         })
         wx.setNavigationBarTitle({ title: '编辑记录' })
       }
@@ -66,7 +102,10 @@ Page({
       'form.type': type,
       categories,
       selectedCategory: '',
-      'form.category': ''
+      'form.category': '',
+      'form.reimbursementStatus': 'none',
+      'form.linkedRecordId': '',
+      linkedExpenseName: ''
     })
   },
 
@@ -149,6 +188,74 @@ Page({
     this.setData({ 'form.note': e.detail.value })
   },
 
+  // 账户选择
+  toggleAccountPicker() {
+    this.setData({ showAccountPicker: !this.data.showAccountPicker })
+  },
+
+  closeAccountPicker() {
+    this.setData({ showAccountPicker: false })
+  },
+
+  selectAccount(e) {
+    const id = e.currentTarget.dataset.id || ''
+    const account = id ? this.data.accounts.find(a => a.id === id) : null
+    this.setData({
+      selectedAccount: id,
+      'form.accountId': id,
+      selectedAccountName: account ? account.name : '不指定',
+      showAccountPicker: false
+    })
+  },
+
+  // 待报销开关（支出记录）
+  onReimbursementToggle(e) {
+    const isPending = e.detail.value
+    this.setData({
+      'form.reimbursementStatus': isPending ? 'pending' : 'none'
+    })
+  },
+
+  // 关联原始支出（退款/报销收入）
+  toggleLinkedPicker() {
+    // 加载可关联的待报销支出
+    const records = storage.getRecords()
+    const linkable = util.getLinkableExpenses(records, this.data.form.date || util.getToday())
+    this.setData({
+      showLinkedPicker: !this.data.showLinkedPicker,
+      linkableExpenses: linkable
+    })
+  },
+
+  closeLinkedPicker() {
+    this.setData({ showLinkedPicker: false })
+  },
+
+  selectLinkedExpense(e) {
+    const id = e.currentTarget.dataset.id
+    const expense = this.data.linkableExpenses.find(r => r.id === id)
+    if (expense) {
+      // 更新原始支出状态为"已报销"
+      storage.updateRecord(id, { reimbursementStatus: 'reimbursed' })
+      this.setData({
+        'form.linkedRecordId': id,
+        linkedExpenseName: expense.categoryIcon + ' ' + expense.categoryName + ' ¥' + expense.amountFormatted,
+        showLinkedPicker: false
+      })
+    }
+  },
+
+  clearLinkedExpense() {
+    // 如果之前关联了，恢复原支出状态
+    if (this.data.form.linkedRecordId) {
+      storage.updateRecord(this.data.form.linkedRecordId, { reimbursementStatus: 'pending' })
+    }
+    this.setData({
+      'form.linkedRecordId': '',
+      linkedExpenseName: ''
+    })
+  },
+
   onSave() {
     const { form, isNew, recordId } = this.data
 
@@ -171,7 +278,10 @@ Page({
       amount: parseFloat(form.amount),
       category: form.category,
       date: form.date,
-      note: form.note.trim()
+      note: form.note.trim(),
+      accountId: form.accountId || '',
+      reimbursementStatus: form.reimbursementStatus || 'none',
+      linkedRecordId: form.linkedRecordId || ''
     }
 
     if (isNew) {

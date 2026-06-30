@@ -43,6 +43,19 @@
         <text class="setting-arrow">›</text>
       </view>
     </view>
+    <view class="setting-divider-compact"></view>
+    <view class="setting-item" bindtap="goAccounts">
+      <view class="setting-left">
+        <view class="setting-icon-box" style="background: #E8F0FE;">
+          <text class="si">💳</text>
+        </view>
+        <text class="setting-name">账户管理</text>
+      </view>
+      <view class="setting-right">
+        <text class="setting-hint" wx:if="{{accountCount > 0}}">{{accountCount}} 个账户</text>
+        <text class="setting-arrow">›</text>
+      </view>
+    </view>
   </view>
 
   <!-- 货币选择弹出层 -->

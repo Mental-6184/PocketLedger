@@ -246,6 +246,20 @@
     </view>
   </view>
 
+  <!-- 待报销提示 -->
+  <view class="card reimburse-hint anim-fade-in-up" style="animation-delay: 0.12s;" wx:if="{{pendingReimburseCount > 0}}">
+    <view class="flex-between">
+      <view class="flex-row">
+        <text class="reimburse-hint-icon">🏷️</text>
+        <view>
+          <text class="reimburse-hint-title">待报销</text>
+          <text class="text-xs text-secondary" style="display:block;margin-top:2rpx;">{{pendingReimburseCount}} 笔共 {{currency}}{{pendingReimburseAmount}}</text>
+        </view>
+      </view>
+      <text class="reimburse-hint-arrow" bindtap="goRecords">查看 ›</text>
+    </view>
+  </view>
+
   <!-- 最近记录 -->
   <view class="card">
     <view class="flex-between">

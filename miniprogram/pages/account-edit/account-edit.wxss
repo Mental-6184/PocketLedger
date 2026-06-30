@@ -1,0 +1,185 @@
+/**
+ * 账户编辑页样式
+ */
+
+.container {
+  padding: 32rpx;
+  padding-bottom: 60rpx;
+}
+
+/* 头部图标+名称 */
+.header-card {
+  display: flex;
+  align-items: center;
+  padding: 32rpx;
+}
+
+.icon-preview {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+
+.icon-value {
+  font-size: 48rpx;
+  line-height: 1;
+}
+
+.icon-hint {
+  margin-top: 4rpx;
+}
+
+.name-input {
+  flex: 1;
+  font-size: 32rpx;
+  font-weight: 500;
+  padding: 16rpx 0;
+  border-bottom: 2rpx solid var(--color-border);
+}
+
+/* 类型选择 */
+.type-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16rpx;
+}
+
+.type-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx 8rpx;
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  transition: all 0.2s;
+}
+
+.type-item.active {
+  background: rgba(42, 161, 152, 0.12);
+  box-shadow: 0 0 0 2rpx var(--color-primary);
+}
+
+.type-icon {
+  font-size: 40rpx;
+  margin-bottom: 8rpx;
+}
+
+.type-name {
+  font-size: 22rpx;
+  color: var(--color-text-secondary);
+}
+
+.type-item.active .type-name {
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+/* 余额输入 */
+.balance-input-row {
+  display: flex;
+  align-items: center;
+  border-bottom: 2rpx solid var(--color-border);
+  padding: 12rpx 0;
+}
+
+.balance-currency {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-right: 8rpx;
+}
+
+.balance-input {
+  flex: 1;
+  font-size: 40rpx;
+  font-weight: 600;
+}
+
+/* 设置行 */
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx;
+}
+
+.setting-info {
+  flex: 1;
+  margin-right: 24rpx;
+}
+
+.setting-label {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: var(--color-text);
+  display: block;
+  margin-bottom: 4rpx;
+}
+
+/* 保存区域 */
+.save-section {
+  margin-top: 48rpx;
+}
+
+/* 图标选择弹窗 */
+.icon-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+}
+
+.icon-modal {
+  width: 100%;
+  background: #fff;
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 32rpx;
+  padding-bottom: 60rpx;
+  max-height: 60vh;
+}
+
+.icon-modal-header {
+  text-align: center;
+  margin-bottom: 32rpx;
+}
+
+.icon-modal-title {
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20rpx;
+}
+
+.icon-item {
+  width: 80rpx;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44rpx;
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  margin: 0 auto;
+  transition: all 0.2s;
+}
+
+.icon-item.active {
+  background: rgba(42, 161, 152, 0.15);
+  box-shadow: 0 0 0 2rpx var(--color-primary);
+}

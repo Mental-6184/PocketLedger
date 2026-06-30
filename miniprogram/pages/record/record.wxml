@@ -39,6 +39,56 @@
         </view>
       </view>
 
+      <!-- 账户选择 -->
+      <view class="card account-row" bindtap="toggleAccountPicker">
+        <view class="account-row-inner flex-between">
+          <view class="flex-row">
+            <text class="account-row-label">💳</text>
+            <text class="account-row-text">支付方式</text>
+          </view>
+          <view class="flex-row">
+            <text class="account-row-value">{{selectedAccountName}}</text>
+            <text class="setting-arrow">›</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 待报销开关（仅支出） -->
+      <view class="card reimburse-row" wx:if="{{form.type === 'expense'}}" catchtap="preventBubble">
+        <view class="flex-between">
+          <view class="flex-row">
+            <text class="reimburse-icon">🏷️</text>
+            <view>
+              <text class="reimburse-label">待报销</text>
+              <text class="text-xs text-secondary" style="display:block;margin-top:2rpx;">帮别人垫付？标记后可追踪报销状态</text>
+            </view>
+          </view>
+          <switch checked="{{form.reimbursementStatus === 'pending'}}" bindchange="onReimbursementToggle" color="#2AA198" />
+        </view>
+      </view>
+
+      <!-- 关联原始支出（仅退款/报销收入） -->
+      <view class="card reimburse-row" wx:if="{{form.type === 'income' && form.category === 'refund'}}" catchtap="preventBubble">
+        <view class="flex-between" bindtap="toggleLinkedPicker">
+          <view class="flex-row">
+            <text class="reimburse-icon">🔗</text>
+            <view>
+              <text class="reimburse-label">关联原始支出</text>
+              <text class="text-xs text-secondary" style="display:block;margin-top:2rpx;">退款/报销不计入真实收入</text>
+            </view>
+          </view>
+          <view class="flex-row">
+            <text class="linked-name" wx:if="{{linkedExpenseName}}">{{linkedExpenseName}}</text>
+            <text class="text-xs text-secondary" wx:else>选择</text>
+            <text class="setting-arrow">›</text>
+          </view>
+        </view>
+        <!-- 已关联时显示清除按钮 -->
+        <view class="linked-clear" wx:if="{{form.linkedRecordId}}" bindtap="clearLinkedExpense">
+          <text class="text-xs" style="color: var(--color-expense);">取消关联</text>
+        </view>
+      </view>
+
       <!-- 日期和备注（压缩到一行） -->
       <view class="card compact-info">
         <view class="compact-info-row flex-between">
@@ -72,6 +122,57 @@
         <text class="note-input-close" bindtap="toggleNoteInput">完成</text>
       </view>
       <textarea class="note-input-field" placeholder="添加备注（可选）" value="{{form.note}}" bindinput="onNoteInput" maxlength="100" focus="{{showNoteInput}}" />
+    </view>
+  </view>
+
+  <!-- 账户选择弹窗 -->
+  <view class="account-mask" wx:if="{{showAccountPicker}}" bindtap="closeAccountPicker">
+    <view class="account-modal" catchtap="preventBubble">
+      <view class="account-modal-header">
+        <text class="account-modal-title">选择支付方式</text>
+      </view>
+      <view class="account-list">
+        <view class="account-option {{selectedAccount === '' ? 'active' : ''}}" bindtap="selectAccount" data-id="">
+          <text class="account-option-name">不指定</text>
+          <text class="account-option-check" wx:if="{{selectedAccount === ''}}">✓</text>
+        </view>
+        <view class="account-option {{selectedAccount === item.id ? 'active' : ''}}"
+              wx:for="{{accounts}}" wx:key="id"
+              bindtap="selectAccount" data-id="{{item.id}}">
+          <view class="account-option-left flex-row">
+            <text class="account-option-icon">{{item.icon}}</text>
+            <text class="account-option-name">{{item.name}}</text>
+          </view>
+          <text class="account-option-check" wx:if="{{selectedAccount === item.id}}">✓</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 关联支出选择弹窗 -->
+  <view class="account-mask" wx:if="{{showLinkedPicker}}" bindtap="closeLinkedPicker">
+    <view class="account-modal" catchtap="preventBubble">
+      <view class="account-modal-header">
+        <text class="account-modal-title">选择要关联的支出</text>
+        <text class="text-xs text-secondary" style="margin-top:8rpx;display:block;">仅显示待报销的支出记录</text>
+      </view>
+      <view class="account-list">
+        <view class="linked-empty" wx:if="{{linkableExpenses.length === 0}}">
+          <text class="text-sm text-secondary">暂无待报销的支出记录</text>
+          <text class="text-xs text-secondary" style="margin-top:8rpx;display:block;">先在支出记录中开启"待报销"标记</text>
+        </view>
+        <view class="account-option" wx:for="{{linkableExpenses}}" wx:key="id"
+              bindtap="selectLinkedExpense" data-id="{{item.id}}">
+          <view class="account-option-left flex-row" style="flex:1;">
+            <text class="account-option-icon">{{item.categoryIcon}}</text>
+            <view style="flex:1;min-width:0;">
+              <text class="account-option-name">{{item.categoryName}}</text>
+              <text class="text-xs text-secondary" style="display:block;margin-top:2rpx;">{{item.date}}{{item.note ? ' · ' + item.note : ''}}</text>
+            </view>
+          </view>
+          <text class="account-option-check" style="color:var(--color-expense);">¥{{item.amountFormatted}}</text>
+        </view>
+      </view>
     </view>
   </view>
 
