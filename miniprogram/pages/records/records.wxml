@@ -40,6 +40,16 @@
     </view>
   </scroll-view>
 
+  <!-- 搜索栏 -->
+  <view class="search-bar card">
+    <text class="search-icon">🔍</text>
+    <input class="search-input" placeholder="搜索备注、分类、账户…" placeholder-class="search-placeholder"
+           value="{{searchKeyword}}" bindinput="onSearchInput" confirm-type="search" />
+    <view class="search-clear" wx:if="{{searchKeyword}}" bindtap="onClearSearch">
+      <text>✕</text>
+    </view>
+  </view>
+
   <!-- 记录列表 -->
   <view class="record-list" wx:if="{{filteredRecords.length > 0}}">
     <view class="record-group anim-fade-in-up" wx:for="{{groupedRecords}}" wx:key="date"

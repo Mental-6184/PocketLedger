@@ -265,18 +265,18 @@ Page({
       return
     }
 
-    const settings = storage.getSettings()
     const record = {
-      id: Date.now().toString(),
       type: 'expense',
       category: quickCategory.id,
       amount: parseFloat(quickAmount),
       date: util.getToday(),
       note: '',
-      createdAt: new Date().toISOString()
+      accountId: ''
     }
 
     storage.addRecord(record)
+    // 同步账户余额（快捷记账暂不选账户，accountId 为空时自动跳过）
+    storage.syncAccountBalance(null, record)
     this.closeQuickInput()
     this.loadData()
     wx.showToast({ title: '记账成功', icon: 'success' })

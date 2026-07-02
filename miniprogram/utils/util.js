@@ -171,6 +171,26 @@ function getExpenseByCategory(records, month) {
 }
 
 /**
+ * 获取收入分类统计
+ */
+function getIncomeByCategory(records, month) {
+  const monthRecords = records.filter(r => r.date && r.date.startsWith(month) && r.type === 'income')
+  const map = {}
+  monthRecords.forEach(r => {
+    const cat = r.category || 'other_income'
+    if (!map[cat]) map[cat] = 0
+    map[cat] += parseFloat(r.amount) || 0
+  })
+  const { INCOME_CATEGORIES } = require('./constants')
+  return Object.keys(map)
+    .map(catId => {
+      const catInfo = INCOME_CATEGORIES.find(c => c.id === catId) || { id: catId, name: catId, icon: '📌' }
+      return { ...catInfo, amount: map[catId] }
+    })
+    .sort((a, b) => b.amount - a.amount)
+}
+
+/**
  * 防抖
  */
 function debounce(fn, delay) {
@@ -426,7 +446,7 @@ module.exports = {
   getCurrentMonth, getToday, padZero, daysBetween,
   getCategoryInfo, getCycleName, calcNextDate,
   isSubExpiringSoon, isSubExpired,
-  getMonthStats, getExpenseByCategory, debounce,
+  getMonthStats, getExpenseByCategory, getIncomeByCategory, debounce,
   getSubBillingDatesInMonth, calcEffectiveMonthlyCost,
   getCalendarGrid, getCurrencySymbol,
   getAccountStats, getRefundStats, getLinkableExpenses

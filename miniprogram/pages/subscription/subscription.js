@@ -1,9 +1,8 @@
 /**
- * 订阅管理页
+ * 订阅管理页 - 订阅列表、到期提醒、自动扣费
  */
 const storage = require('../../utils/storage')
 const util = require('../../utils/util')
-const { SUBSCRIPTION_CYCLES } = require('../../utils/constants')
 const exchange = require('../../utils/exchange')
 
 Page({
@@ -18,6 +17,7 @@ Page({
 
   onShow() {
     this.loadData()
+    this.checkExpiredSubs()
   },
 
   loadData() {
@@ -72,6 +72,58 @@ Page({
     })
   },
 
+  /**
+   * 检测过期订阅，弹窗提示用户续费
+   */
+  checkExpiredSubs() {
+    const subs = storage.getSubscriptions()
+    const today = util.getToday()
+
+    // 找出已过期（nextDate < 今天）且启用中的订阅
+    const expiredSubs = subs.filter(s => {
+      if (!s.enabled) return false
+      return s.nextDate && s.nextDate < today
+    })
+
+    if (expiredSubs.length === 0) return
+
+    // 单个过期订阅：直接弹确认
+    if (expiredSubs.length === 1) {
+      const sub = expiredSubs[0]
+      wx.showModal({
+        title: '订阅到期',
+        content: `「${sub.name}」已于 ${util.formatDateCN(sub.nextDate)} 到期，是否生成扣费记录？`,
+        confirmText: '续费',
+        confirmColor: '#2AA198',
+        success: (res) => {
+          if (res.confirm) {
+            this._doRenew(sub.id)
+          }
+        }
+      })
+      return
+    }
+
+    // 多个过期订阅：弹 ActionSheet 列表
+    const itemList = expiredSubs.map(s =>
+      `${s.name}（${util.formatDateCN(s.nextDate)}到期）`
+    )
+    itemList.push('全部续费')
+
+    wx.showActionSheet({
+      itemList,
+      success: (res) => {
+        if (res.tapIndex < expiredSubs.length) {
+          // 选了单个订阅
+          this._doRenew(expiredSubs[res.tapIndex].id)
+        } else {
+          // 全部续费
+          expiredSubs.forEach(s => this._doRenew(s.id))
+        }
+      }
+    })
+  },
+
   goAdd() {
     wx.navigateTo({ url: '/pages/sub-edit/sub-edit' })
   },
@@ -94,14 +146,35 @@ Page({
 
   onRenew(e) {
     const id = e.currentTarget.dataset.id
+    this._doRenew(id)
+  },
+
+  /**
+   * 执行续费：生成支出记录 + 更新下次扣费日期
+   */
+  _doRenew(subId) {
     const subs = storage.getSubscriptions()
-    const sub = subs.find(s => s.id === id)
-    if (sub) {
-      const nextDate = util.calcNextDate(sub.nextDate, sub.cycleId || sub.cycle)
-      storage.updateSubscription(id, { nextDate })
-      this.loadData()
-      wx.showToast({ title: '已续费至 ' + util.formatDateCN(nextDate), icon: 'success' })
+    const sub = subs.find(s => s.id === subId)
+    if (!sub) return
+
+    // 生成支出记录
+    const record = {
+      type: 'expense',
+      amount: parseFloat(sub.amount) || 0,
+      category: sub.category || 'other_expense',
+      date: sub.nextDate || util.getToday(),
+      note: sub.name + ' - 订阅扣费',
+      accountId: 'acc_wechat'
     }
+    const savedRecord = storage.addRecord(record)
+    storage.syncAccountBalance(null, savedRecord)
+
+    // 更新下次扣费日期
+    const nextDate = util.calcNextDate(sub.nextDate, sub.cycleId || sub.cycle)
+    storage.updateSubscription(subId, { nextDate })
+
+    this.loadData()
+    wx.showToast({ title: '已续费并生成扣费记录', icon: 'success' })
   },
 
   onDelete(e) {

@@ -162,9 +162,65 @@ function exportAllData() {
 }
 
 function importAllData(data) {
-  if (!data || typeof data !== 'object') {
-    return { success: false, msg: '数据格式无效' }
+  if (!data || typeof data !== 'object' || Array.isArray(data)) {
+    return { success: false, msg: '数据格式无效：不是有效的对象' }
   }
+
+  // 校验 records
+  if (data.records) {
+    if (!Array.isArray(data.records)) {
+      return { success: false, msg: '数据格式无效：records 应为数组' }
+    }
+    const validTypes = ['income', 'expense']
+    for (let i = 0; i < data.records.length; i++) {
+      const r = data.records[i]
+      if (!r || typeof r !== 'object') {
+        return { success: false, msg: `records[${i}] 格式无效` }
+      }
+      if (!validTypes.includes(r.type)) {
+        return { success: false, msg: `records[${i}].type 必须为 income 或 expense` }
+      }
+      if (typeof r.amount !== 'number' || r.amount < 0) {
+        return { success: false, msg: `records[${i}].amount 必须为非负数字` }
+      }
+    }
+  }
+
+  // 校验 subscriptions
+  if (data.subscriptions) {
+    if (!Array.isArray(data.subscriptions)) {
+      return { success: false, msg: '数据格式无效：subscriptions 应为数组' }
+    }
+    for (let i = 0; i < data.subscriptions.length; i++) {
+      const s = data.subscriptions[i]
+      if (!s || typeof s !== 'object') {
+        return { success: false, msg: `subscriptions[${i}] 格式无效` }
+      }
+      if (typeof s.amount !== 'number' || s.amount < 0) {
+        return { success: false, msg: `subscriptions[${i}].amount 必须为非负数字` }
+      }
+    }
+  }
+
+  // 校验 accounts
+  if (data.accounts) {
+    if (!Array.isArray(data.accounts)) {
+      return { success: false, msg: '数据格式无效：accounts 应为数组' }
+    }
+    for (let i = 0; i < data.accounts.length; i++) {
+      const a = data.accounts[i]
+      if (!a || typeof a !== 'object') {
+        return { success: false, msg: `accounts[${i}] 格式无效` }
+      }
+    }
+  }
+
+  // 校验 settings
+  if (data.settings && typeof data.settings !== 'object') {
+    return { success: false, msg: '数据格式无效：settings 应为对象' }
+  }
+
+  // 全部校验通过，执行导入
   if (data.records) saveRecords(data.records)
   if (data.subscriptions) saveSubscriptions(data.subscriptions)
   if (data.accounts) saveAccounts(data.accounts)
@@ -179,11 +235,57 @@ function clearAllData() {
   wx.removeStorageSync(STORAGE_KEYS.SETTINGS)
 }
 
+// ==================== 账户余额同步 ====================
+
+/**
+ * 记账后同步账户余额
+ * - 新增记录：oldRecord 传 null
+ * - 编辑记录：传入 oldRecord 和 newRecord（自动计算差值）
+ * - 删除记录：newRecord 传 null
+ * @param {Object|null} oldRecord - 旧记录（编辑/删除时传入）
+ * @param {Object|null} newRecord - 新记录（新增/编辑时传入）
+ */
+function syncAccountBalance(oldRecord, newRecord) {
+  const accounts = getAccounts()
+  let changed = false
+
+  // 回退旧记录对账户余额的影响
+  if (oldRecord && oldRecord.accountId) {
+    const oldAccount = accounts.find(a => a.id === oldRecord.accountId)
+    if (oldAccount) {
+      const amount = parseFloat(oldRecord.amount) || 0
+      if (oldRecord.type === 'expense') {
+        oldAccount.balance += amount // 支出回退 → 加回来
+      } else if (oldRecord.type === 'income') {
+        oldAccount.balance -= amount // 收入回退 → 减回去
+      }
+      changed = true
+    }
+  }
+
+  // 应用新记录对账户余额的影响
+  if (newRecord && newRecord.accountId) {
+    const newAccount = accounts.find(a => a.id === newRecord.accountId)
+    if (newAccount) {
+      const amount = parseFloat(newRecord.amount) || 0
+      if (newRecord.type === 'expense') {
+        newAccount.balance -= amount // 支出 → 减余额
+      } else if (newRecord.type === 'income') {
+        newAccount.balance += amount // 收入 → 加余额
+      }
+      changed = true
+    }
+  }
+
+  if (changed) saveAccounts(accounts)
+}
+
 module.exports = {
   generateId,
   getRecords, saveRecords, addRecord, updateRecord, deleteRecord,
   getSubscriptions, saveSubscriptions, addSubscription, updateSubscription, deleteSubscription,
   getAccounts, saveAccounts, addAccount, updateAccount, deleteAccount,
   getSettings, saveSettings, updateSettings,
-  exportAllData, importAllData, clearAllData
+  exportAllData, importAllData, clearAllData,
+  syncAccountBalance
 }

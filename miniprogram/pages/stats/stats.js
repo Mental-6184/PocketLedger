@@ -26,6 +26,7 @@ Page({
       balance: 0
     },
     categoryStats: [],
+    incomeCategoryStats: [],
     trendData: [],
     chartLines: [0, 25, 50, 75, 100],
     chartLineLabels: [],
@@ -56,7 +57,7 @@ Page({
     // 消费占比
     const expenseRatio = stats.income > 0 ? Math.round((stats.expense / stats.income) * 100) : 0
 
-    // 分类统计
+    // 支出分类统计
     const categoryData = util.getExpenseByCategory(records, currentMonth)
     const totalExpense = categoryData.reduce((s, c) => s + c.amount, 0)
     const categoryStats = categoryData.map((c, i) => ({
@@ -64,6 +65,17 @@ Page({
       amountFormatted: util.formatAmount(c.amount),
       percent: totalExpense > 0 ? Math.round((c.amount / totalExpense) * 100) : 0,
       percentText: totalExpense > 0 ? (c.amount / totalExpense * 100).toFixed(1) : '0.0',
+      color: CATEGORY_COLORS[i % CATEGORY_COLORS.length]
+    }))
+
+    // 收入分类统计
+    const incomeCategoryData = util.getIncomeByCategory(records, currentMonth)
+    const totalIncome = incomeCategoryData.reduce((s, c) => s + c.amount, 0)
+    const incomeCategoryStats = incomeCategoryData.map((c, i) => ({
+      ...c,
+      amountFormatted: util.formatAmount(c.amount),
+      percent: totalIncome > 0 ? Math.round((c.amount / totalIncome) * 100) : 0,
+      percentText: totalIncome > 0 ? (c.amount / totalIncome * 100).toFixed(1) : '0.0',
       color: CATEGORY_COLORS[i % CATEGORY_COLORS.length]
     }))
 
@@ -98,6 +110,7 @@ Page({
       expenseRatio,
       expenseRatioText: String(expenseRatio),
       categoryStats,
+      incomeCategoryStats,
       trendData,
       chartLineLabels,
       accountStats,

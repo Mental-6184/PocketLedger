@@ -84,6 +84,41 @@
   border-color: var(--color-primary);
 }
 
+/* 搜索栏 */
+.search-bar {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 24rpx;
+  margin-top: var(--spacing-sm);
+}
+
+.search-icon {
+  font-size: 28rpx;
+  margin-right: 12rpx;
+  flex-shrink: 0;
+}
+
+.search-input {
+  flex: 1;
+  font-size: 26rpx;
+  color: var(--color-text);
+}
+
+.search-placeholder {
+  color: var(--color-text-light);
+}
+
+.search-clear {
+  width: 40rpx;
+  height: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-light);
+  font-size: 24rpx;
+  flex-shrink: 0;
+}
+
 /* 记录分组 */
 .record-group {
   margin-bottom: var(--spacing-md);

@@ -57,7 +57,7 @@
     </view>
   </view>
 
-  <!-- 分类占比 -->
+  <!-- 支出分类占比 -->
   <view class="card" wx:if="{{categoryStats.length > 0}}" style="animation-delay: 0.1s;">
     <view class="flex-between mb-md">
       <text class="card-title" style="margin-bottom:0">支出分类</text>
@@ -67,6 +67,32 @@
     <!-- 分类卡片网格 -->
     <view class="cat-card-grid">
       <view class="cat-card anim-fade-in-up" wx:for="{{categoryStats}}" wx:key="id"
+            style="animation-delay: {{index < 3 ? 0.08 + index * 0.04 : 0}}s; border-left: 6rpx solid {{item.color}};">
+        <view class="cat-card-top">
+          <text class="cat-card-icon">{{item.icon}}</text>
+          <view class="cat-card-info">
+            <text class="cat-card-name">{{item.name}}</text>
+            <text class="cat-card-amount">{{currency}}{{item.amountFormatted}}</text>
+          </view>
+          <text class="cat-card-percent" style="color: {{item.color}};">{{item.percentText}}%</text>
+        </view>
+        <view class="cat-card-bar-wrap">
+          <view class="cat-card-bar" style="width: {{item.percent}}%; background: {{item.color}};"></view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 收入分类占比 -->
+  <view class="card" wx:if="{{incomeCategoryStats.length > 0}}" style="animation-delay: 0.12s;">
+    <view class="flex-between mb-md">
+      <text class="card-title" style="margin-bottom:0">收入来源</text>
+      <text class="text-xs text-secondary">共 {{incomeCategoryStats.length}} 类</text>
+    </view>
+
+    <!-- 分类卡片网格 -->
+    <view class="cat-card-grid">
+      <view class="cat-card anim-fade-in-up" wx:for="{{incomeCategoryStats}}" wx:key="id"
             style="animation-delay: {{index < 3 ? 0.08 + index * 0.04 : 0}}s; border-left: 6rpx solid {{item.color}};">
         <view class="cat-card-top">
           <text class="cat-card-icon">{{item.icon}}</text>

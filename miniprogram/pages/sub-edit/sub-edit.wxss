@@ -112,6 +112,37 @@
   font-weight: 500;
 }
 
+/* 支出分类 */
+.form-hint {
+  display: block;
+  font-size: 22rpx;
+  color: var(--color-text-light);
+  margin-bottom: 16rpx;
+}
+
+.category-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.category-item {
+  padding: 16rpx 24rpx;
+  font-size: 24rpx;
+  color: var(--color-text-secondary);
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+  border: 2rpx solid transparent;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.category-item.active {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  font-weight: 500;
+}
+
 /* 操作按钮 */
 .actions {
   margin-top: var(--spacing-xl);

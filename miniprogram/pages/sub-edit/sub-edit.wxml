@@ -72,6 +72,18 @@
     </view>
 
     <view class="form-group">
+      <text class="form-label">支出分类</text>
+      <text class="form-hint">续费时自动生成的支出记录将归入此分类</text>
+      <view class="category-grid">
+        <view class="category-item {{form.category === item.id ? 'active' : ''}}"
+              wx:for="{{categories}}" wx:key="id"
+              bindtap="selectCategory" data-id="{{item.id}}">
+          {{item.icon}} {{item.name}}
+        </view>
+      </view>
+    </view>
+
+    <view class="form-group">
       <text class="form-label">提前提醒天数</text>
       <view class="remind-grid">
         <view class="remind-item {{form.remindDays === item ? 'active' : ''}}"

@@ -3,7 +3,7 @@
  */
 const storage = require('../../utils/storage')
 const util = require('../../utils/util')
-const { SUBSCRIPTION_CYCLES, CURRENCIES } = require('../../utils/constants')
+const { SUBSCRIPTION_CYCLES, CURRENCIES, EXPENSE_CATEGORIES } = require('../../utils/constants')
 const exchange = require('../../utils/exchange')
 
 Page({
@@ -19,8 +19,10 @@ Page({
       note: '',
       enabled: true,
       currency: 'CNY',
-      spreadYearly: false
+      spreadYearly: false,
+      category: 'other_expense'
     },
+    categories: EXPENSE_CATEGORIES,
     cycles: SUBSCRIPTION_CYCLES,
     selectedCycle: 'monthly',
     remindOptions: [0, 1, 3, 5, 7],
@@ -61,7 +63,8 @@ Page({
             note: sub.note || '',
             enabled: sub.enabled !== false,
             currency: subCurrency,
-            spreadYearly: sub.spreadYearly || false
+            spreadYearly: sub.spreadYearly || false,
+            category: sub.category || 'other_expense'
           },
           selectedCycle: sub.cycleId || sub.cycle,
           selectedCurrency: subCurrency
@@ -140,6 +143,11 @@ Page({
     })
   },
 
+  selectCategory(e) {
+    const id = e.currentTarget.dataset.id
+    this.setData({ 'form.category': id })
+  },
+
   onNextDateChange(e) {
     this.setData({ 'form.nextDate': e.detail.value })
   },
@@ -182,7 +190,8 @@ Page({
       note: form.note.trim(),
       enabled: form.enabled,
       currency: form.currency || 'CNY',
-      spreadYearly: form.spreadYearly || false
+      spreadYearly: form.spreadYearly || false,
+      category: form.category || 'other_expense'
     }
 
     if (isNew) {

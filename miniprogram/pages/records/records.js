@@ -1,5 +1,5 @@
 /**
- * 记账列表页 - 月份筛选、分类筛选、删除
+ * 记账列表页 - 月份筛选、分类筛选、关键词搜索、删除
  */
 const storage = require('../../utils/storage')
 const util = require('../../utils/util')
@@ -11,6 +11,7 @@ Page({
     currentMonthCN: '',
     filterType: 'all',
     filterCategory: '',
+    searchKeyword: '',
     currentCategories: [],
     filteredRecords: [],
     groupedRecords: [],
@@ -18,6 +19,9 @@ Page({
     monthExpense: '0.00',
     currency: '¥'
   },
+
+  // 搜索防抖计时器
+  _searchTimer: null,
 
   onShow() {
     const settings = storage.getSettings()
@@ -32,7 +36,12 @@ Page({
 
   refreshList() {
     const records = storage.getRecords()
-    const { currentMonth, filterType, filterCategory } = this.data
+    const { currentMonth, filterType, filterCategory, searchKeyword } = this.data
+
+    // 账户映射（提前构建，供搜索使用）
+    const accounts = storage.getAccounts()
+    const accountMap = {}
+    accounts.forEach(a => { accountMap[a.id] = a })
 
     // 按月份筛选
     let filtered = records.filter(r => r.date && r.date.startsWith(currentMonth))
@@ -47,6 +56,19 @@ Page({
       filtered = filtered.filter(r => r.category === filterCategory)
     }
 
+    // 按关键词搜索（备注 + 分类名 + 账户名）
+    if (searchKeyword) {
+      const keyword = searchKeyword.toLowerCase()
+      filtered = filtered.filter(r => {
+        const noteMatch = r.note && r.note.toLowerCase().includes(keyword)
+        const catInfo = util.getCategoryInfo(r.category, r.type)
+        const catMatch = catInfo.name && catInfo.name.toLowerCase().includes(keyword)
+        const account = r.accountId ? accountMap[r.accountId] : null
+        const accMatch = account && account.name && account.name.toLowerCase().includes(keyword)
+        return noteMatch || catMatch || accMatch
+      })
+    }
+
     // 月度统计（全量，不受分类筛选影响）
     const monthRecords = records.filter(r => r.date && r.date.startsWith(currentMonth))
     const monthIncome = monthRecords
@@ -55,11 +77,6 @@ Page({
     const monthExpense = monthRecords
       .filter(r => r.type === 'expense')
       .reduce((s, r) => s + (parseFloat(r.amount) || 0), 0)
-
-    // 账户映射
-    const accounts = storage.getAccounts()
-    const accountMap = {}
-    accounts.forEach(a => { accountMap[a.id] = a })
 
     // 格式化记录
     const formatted = filtered.map(r => {
@@ -133,6 +150,21 @@ Page({
     this.refreshList()
   },
 
+  onSearchInput(e) {
+    const keyword = e.detail.value
+    if (this._searchTimer) clearTimeout(this._searchTimer)
+    this._searchTimer = setTimeout(() => {
+      this.setData({ searchKeyword: keyword })
+      this.refreshList()
+    }, 300)
+  },
+
+  onClearSearch() {
+    if (this._searchTimer) clearTimeout(this._searchTimer)
+    this.setData({ searchKeyword: '' })
+    this.refreshList()
+  },
+
   goAdd() {
     wx.navigateTo({ url: '/pages/record/record' })
   },
@@ -163,7 +195,12 @@ Page({
       confirmColor: '#D4605A',
       success: (res) => {
         if (res.confirm) {
+          // 删除前读取旧记录，用于回退余额
+          const oldRecords = storage.getRecords()
+          const oldRecord = oldRecords.find(r => r.id === id)
           storage.deleteRecord(id)
+          // 回退账户余额
+          storage.syncAccountBalance(oldRecord, null)
           this.refreshList()
           wx.showToast({ title: '已删除', icon: 'success' })
         }

@@ -286,9 +286,16 @@ Page({
 
     if (isNew) {
       storage.addRecord(record)
+      // 同步账户余额
+      storage.syncAccountBalance(null, record)
       wx.showToast({ title: '已保存', icon: 'success' })
     } else {
+      // 编辑前读取旧记录，用于计算余额差值
+      const oldRecords = storage.getRecords()
+      const oldRecord = oldRecords.find(r => r.id === recordId)
       storage.updateRecord(recordId, record)
+      // 同步账户余额（回退旧的 + 应用新的）
+      storage.syncAccountBalance(oldRecord, record)
       wx.showToast({ title: '已更新', icon: 'success' })
     }
 
@@ -302,7 +309,12 @@ Page({
       confirmColor: '#D4605A',
       success: (res) => {
         if (res.confirm) {
+          // 删除前读取旧记录，用于回退余额
+          const oldRecords = storage.getRecords()
+          const oldRecord = oldRecords.find(r => r.id === this.data.recordId)
           storage.deleteRecord(this.data.recordId)
+          // 回退账户余额
+          storage.syncAccountBalance(oldRecord, null)
           wx.showToast({ title: '已删除', icon: 'success' })
           setTimeout(() => wx.navigateBack(), 800)
         }
