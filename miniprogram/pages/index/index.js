@@ -27,6 +27,11 @@ Page({
     showQuickInput: false,
     quickCategory: null,
     quickAmount: '',
+    // 快捷记账-账户选择
+    accounts: [],
+    quickAccountId: '',
+    quickAccountName: '不指定',
+    showQuickAccountPicker: false,
     // 扣款日历
     calendarGrid: [],
     calendarYear: 0,
@@ -128,6 +133,9 @@ Page({
         }
       })
 
+    // 账户列表
+    const accounts = storage.getAccounts()
+
     // 计算常用分类（最近30天使用频率最高的4个）
     const quickCategories = this.getQuickCategories(records)
 
@@ -149,6 +157,7 @@ Page({
       budgetFormatted: util.formatAmount(budget),
       budgetPercent,
       currency: settings.currency || '¥',
+      accounts,
       recentRecords,
       expiringSubs,
       subCount: subs.length,
@@ -215,7 +224,9 @@ Page({
     this.setData({
       showQuickInput: true,
       quickCategory: category,
-      quickAmount: ''
+      quickAmount: '',
+      quickAccountId: '',
+      quickAccountName: '不指定'
     })
   },
 
@@ -224,7 +235,30 @@ Page({
     this.setData({
       showQuickInput: false,
       quickCategory: null,
-      quickAmount: ''
+      quickAmount: '',
+      quickAccountId: '',
+      quickAccountName: '不指定'
+    })
+  },
+
+  // 切换快捷记账账户选择器
+  toggleQuickAccountPicker() {
+    this.setData({ showQuickAccountPicker: !this.data.showQuickAccountPicker })
+  },
+
+  // 关闭快捷记账账户选择器
+  closeQuickAccountPicker() {
+    this.setData({ showQuickAccountPicker: false })
+  },
+
+  // 选择快捷记账账户
+  selectQuickAccount(e) {
+    const id = e.currentTarget.dataset.id
+    const account = id ? this.data.accounts.find(a => a.id === id) : null
+    this.setData({
+      quickAccountId: id || '',
+      quickAccountName: account ? account.name : '不指定',
+      showQuickAccountPicker: false
     })
   },
 
@@ -259,7 +293,7 @@ Page({
 
   // 保存快捷记录
   saveQuickRecord() {
-    const { quickCategory, quickAmount } = this.data
+    const { quickCategory, quickAmount, quickAccountId } = this.data
     if (!quickCategory || !quickAmount || parseFloat(quickAmount) <= 0) {
       wx.showToast({ title: '请输入金额', icon: 'none' })
       return
@@ -271,11 +305,11 @@ Page({
       amount: parseFloat(quickAmount),
       date: util.getToday(),
       note: '',
-      accountId: ''
+      accountId: quickAccountId || ''
     }
 
     storage.addRecord(record)
-    // 同步账户余额（快捷记账暂不选账户，accountId 为空时自动跳过）
+    // 同步账户余额
     storage.syncAccountBalance(null, record)
     this.closeQuickInput()
     this.loadData()

@@ -110,6 +110,34 @@
   letter-spacing: -2rpx;
 }
 
+/* 快捷记账-账户选择行 */
+.quick-account-row {
+  background: var(--color-bg);
+  border-radius: 16rpx;
+  margin-bottom: 24rpx;
+  padding: 20rpx 24rpx;
+}
+
+.quick-account-inner {
+  width: 100%;
+}
+
+.quick-account-label {
+  font-size: 32rpx;
+  margin-right: 12rpx;
+}
+
+.quick-account-text {
+  font-size: 28rpx;
+  color: var(--color-text);
+}
+
+.quick-account-value {
+  font-size: 28rpx;
+  color: var(--color-text-secondary);
+  margin-right: 8rpx;
+}
+
 /* 数字键盘 */
 .quick-keyboard {
   display: grid;

@@ -110,6 +110,10 @@
         <text class="info-text">• 按类型筛选：全部 / 仅收入 / 仅支出\n• 按分类筛选：选择类型后可进一步按分类过滤\n• 记录按日期分组，每天显示小计</text>
       </view>
       <view class="info-block">
+        <text class="info-title">搜索记录</text>
+        <text class="info-text">点击顶部搜索图标，输入关键词即可搜索。支持按备注、分类名、账户名进行模糊匹配，快速定位目标记录。</text>
+      </view>
+      <view class="info-block">
         <text class="info-title">编辑与删除</text>
         <text class="info-text">• 点击记录 → 进入编辑页面\n• 长按记录 → 弹出「编辑」或「删除」选项</text>
       </view>
@@ -165,7 +169,11 @@
       </view>
       <view class="info-block">
         <text class="info-title">续费操作</text>
-        <text class="info-text">订阅到期后，点击「续费」按钮，系统会自动将下次扣费日期推进到下一个周期。</text>
+        <text class="info-text">订阅到期后，点击「续费」按钮，系统会自动将下次扣费日期推进到下一个周期，并自动生成一笔支出记录，同时同步对应账户余额。</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">到期自动检测</text>
+        <text class="info-text">打开订阅页面时，系统会自动检测已过期的订阅项目。如有过期订阅，会弹窗确认后批量续费，无需逐个手动操作。</text>
       </view>
     </view>
   </view>
@@ -268,6 +276,10 @@
         <text class="info-text">记账时在「支付方式」行选择使用的账户，统计页会按账户维度展示本月各账户的收支情况。</text>
       </view>
       <view class="info-block">
+        <text class="info-title">余额自动同步</text>
+        <text class="info-text">记账后系统自动同步所选账户余额：支出扣减、收入增加。编辑或删除记录时，余额也会自动回退调整，无需手动修改。</text>
+      </view>
+      <view class="info-block">
         <text class="info-title">计入总资产</text>
         <text class="info-text">账户可设置「计入总资产」开关。关闭后该账户余额不纳入首页总资产统计（适合隐藏不常用的账户）。</text>
       </view>
@@ -356,6 +368,10 @@
       <view class="info-block">
         <text class="info-title">导入数据</text>
         <text class="info-text">先将 JSON 数据复制到剪贴板，然后进入「设置」→「导入数据」，系统会自动读取剪贴板内容并导入。导入会覆盖现有数据，请谨慎操作。</text>
+      </view>
+      <view class="info-block">
+        <text class="info-title">导入校验</text>
+        <text class="info-text">导入时系统会自动校验数据格式，逐项检查 records、subscriptions、accounts 的结构是否正确。格式错误的数据会被拒绝导入，防止破坏本地存储。</text>
       </view>
       <view class="info-block">
         <text class="info-title">清空数据</text>

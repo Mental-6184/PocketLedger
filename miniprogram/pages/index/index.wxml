@@ -174,6 +174,19 @@
         <text class="quick-input-currency">{{currency}}</text>
         <text class="quick-input-value">{{quickAmount || '0.00'}}</text>
       </view>
+      <!-- 账户选择 -->
+      <view class="quick-account-row" bindtap="toggleQuickAccountPicker">
+        <view class="quick-account-inner flex-between">
+          <view class="flex-row">
+            <text class="quick-account-label">💳</text>
+            <text class="quick-account-text">支付方式</text>
+          </view>
+          <view class="flex-row">
+            <text class="quick-account-value">{{quickAccountName}}</text>
+            <text class="setting-arrow">›</text>
+          </view>
+        </view>
+      </view>
       <view class="quick-keyboard">
         <view class="quick-key" bindtap="onQuickKeyTap" data-key="1">1</view>
         <view class="quick-key" bindtap="onQuickKeyTap" data-key="2">2</view>
@@ -190,6 +203,30 @@
       </view>
       <view class="quick-input-actions">
         <button class="btn btn-primary btn-block" bindtap="saveQuickRecord">保存</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 快捷记账-账户选择弹窗 -->
+  <view class="account-mask" wx:if="{{showQuickAccountPicker}}" bindtap="closeQuickAccountPicker">
+    <view class="account-modal" catchtap="preventBubble">
+      <view class="account-modal-header">
+        <text class="account-modal-title">选择支付方式</text>
+      </view>
+      <view class="account-list">
+        <view class="account-option {{quickAccountId === '' ? 'active' : ''}}" bindtap="selectQuickAccount" data-id="">
+          <text class="account-option-name">不指定</text>
+          <text class="account-option-check" wx:if="{{quickAccountId === ''}}">✓</text>
+        </view>
+        <view class="account-option {{quickAccountId === item.id ? 'active' : ''}}"
+              wx:for="{{accounts}}" wx:key="id"
+              bindtap="selectQuickAccount" data-id="{{item.id}}">
+          <view class="account-option-left flex-row">
+            <text class="account-option-icon">{{item.icon}}</text>
+            <text class="account-option-name">{{item.name}}</text>
+          </view>
+          <text class="account-option-check" wx:if="{{quickAccountId === item.id}}">✓</text>
+        </view>
       </view>
     </view>
   </view>

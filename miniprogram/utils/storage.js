@@ -126,8 +126,32 @@ function updateAccount(id, data) {
 function deleteAccount(id) {
   const accounts = getAccounts()
   const filtered = accounts.filter(a => a.id !== id)
+  if (filtered.length === accounts.length) return false
+
+  // 清理关联记录的 accountId
+  const records = getRecords()
+  let recordsChanged = false
+  for (const r of records) {
+    if (r.accountId === id) {
+      r.accountId = ''
+      recordsChanged = true
+    }
+  }
+  if (recordsChanged) saveRecords(records)
+
+  // 清理关联订阅的 accountId
+  const subs = getSubscriptions()
+  let subsChanged = false
+  for (const s of subs) {
+    if (s.accountId === id) {
+      s.accountId = ''
+      subsChanged = true
+    }
+  }
+  if (subsChanged) saveSubscriptions(subs)
+
   saveAccounts(filtered)
-  return filtered.length < accounts.length
+  return true
 }
 
 // ==================== 设置 ====================
