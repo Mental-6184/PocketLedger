@@ -191,7 +191,7 @@
         </view>
         <text class="setting-name">版本</text>
       </view>
-      <text class="setting-value">v1.0.0</text>
+      <text class="setting-value">v2.0.0</text>
     </view>
     <view class="setting-divider-compact"></view>
     <view class="setting-item">

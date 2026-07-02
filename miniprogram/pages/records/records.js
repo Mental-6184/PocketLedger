@@ -22,6 +22,9 @@ Page({
 
   // 搜索防抖计时器
   _searchTimer: null,
+  // 缓存数据，避免重复读取
+  _allRecords: null,
+  _accountMap: null,
 
   onShow() {
     const settings = storage.getSettings()
@@ -31,17 +34,26 @@ Page({
       currentMonthCN: util.formatMonthCN(currentMonth),
       currency: settings.currency || '¥'
     })
+    // 刷新缓存
+    this._allRecords = storage.getRecords()
+    this._accountMap = null // 清空账户映射缓存
     this.refreshList()
   },
 
-  refreshList() {
-    const records = storage.getRecords()
-    const { currentMonth, filterType, filterCategory, searchKeyword } = this.data
+  // 获取账户映射（带缓存）
+  _getAccountMap() {
+    if (!this._accountMap) {
+      const accounts = storage.getAccounts()
+      this._accountMap = {}
+      accounts.forEach(a => { this._accountMap[a.id] = a })
+    }
+    return this._accountMap
+  },
 
-    // 账户映射（提前构建，供搜索使用）
-    const accounts = storage.getAccounts()
-    const accountMap = {}
-    accounts.forEach(a => { accountMap[a.id] = a })
+  refreshList() {
+    const records = this._allRecords || storage.getRecords()
+    const { currentMonth, filterType, filterCategory, searchKeyword } = this.data
+    const accountMap = this._getAccountMap()
 
     // 按月份筛选
     let filtered = records.filter(r => r.date && r.date.startsWith(currentMonth))
@@ -69,20 +81,20 @@ Page({
       })
     }
 
-    // 月度统计（全量，不受分类筛选影响）
-    const monthRecords = records.filter(r => r.date && r.date.startsWith(currentMonth))
-    const monthIncome = monthRecords
-      .filter(r => r.type === 'income')
-      .reduce((s, r) => s + (parseFloat(r.amount) || 0), 0)
-    const monthExpense = monthRecords
-      .filter(r => r.type === 'expense')
-      .reduce((s, r) => s + (parseFloat(r.amount) || 0), 0)
+    // 月度统计（全量，不受分类筛选影响）+ 格式化记录合并遍历
+    let monthIncome = 0, monthExpense = 0
+    const formatted = []
 
-    // 格式化记录
-    const formatted = filtered.map(r => {
+    for (let i = 0; i < filtered.length; i++) {
+      const r = filtered[i]
+      // 月度统计
+      if (r.type === 'income') monthIncome += parseFloat(r.amount) || 0
+      else monthExpense += parseFloat(r.amount) || 0
+
+      // 格式化
       const catInfo = util.getCategoryInfo(r.category, r.type)
       const account = r.accountId ? accountMap[r.accountId] : null
-      return {
+      formatted.push({
         ...r,
         amountFormatted: util.formatAmount(r.amount),
         categoryName: catInfo.name,
@@ -90,8 +102,8 @@ Page({
         accountName: account ? account.name : '',
         accountIcon: account ? account.icon : '',
         reimbursementStatus: r.reimbursementStatus || 'none'
-      }
-    })
+      })
+    }
 
     // 按日期分组
     const groupMap = {}
@@ -195,10 +207,12 @@ Page({
       confirmColor: '#D4605A',
       success: (res) => {
         if (res.confirm) {
-          // 删除前读取旧记录，用于回退余额
-          const oldRecords = storage.getRecords()
+          // 使用缓存的记录，避免重复读取
+          const oldRecords = this._allRecords || storage.getRecords()
           const oldRecord = oldRecords.find(r => r.id === id)
           storage.deleteRecord(id)
+          // 更新缓存
+          this._allRecords = storage.getRecords()
           // 回退账户余额
           storage.syncAccountBalance(oldRecord, null)
           this.refreshList()

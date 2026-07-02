@@ -3,6 +3,7 @@
  */
 const storage = require('../../utils/storage')
 const util = require('../../utils/util')
+const { EXPENSE_CATEGORIES, INCOME_CATEGORIES } = require('../../utils/constants')
 
 // 分类颜色（柔和色调）
 const CATEGORY_COLORS = [
@@ -48,74 +49,119 @@ Page({
     const records = storage.getRecords()
     const { currentMonth } = this.data
 
-    // 月度统计
-    const stats = util.getMonthStats(records, currentMonth)
+    // 单次遍历，收集月度统计 + 分类统计 + 待报销统计
+    let income = 0, expense = 0, recordCount = 0
+    const expenseByCategory = {}
+    const incomeByCategory = {}
+    let pendingAmount = 0, reimbursedAmount = 0, linkedRefundAmount = 0
+    let pendingCount = 0, reimbursedCount = 0
 
-    // 当月记录数
-    const monthRecords = records.filter(r => r.date && r.date.startsWith(currentMonth))
+    for (let i = 0; i < records.length; i++) {
+      const r = records[i]
+      if (!r || !r.date || !r.date.startsWith(currentMonth)) continue
 
-    // 消费占比
-    const expenseRatio = stats.income > 0 ? Math.round((stats.expense / stats.income) * 100) : 0
+      recordCount++
+      const amount = parseFloat(r.amount) || 0
 
-    // 支出分类统计
-    const categoryData = util.getExpenseByCategory(records, currentMonth)
-    const totalExpense = categoryData.reduce((s, c) => s + c.amount, 0)
-    const categoryStats = categoryData.map((c, i) => ({
-      ...c,
-      amountFormatted: util.formatAmount(c.amount),
-      percent: totalExpense > 0 ? Math.round((c.amount / totalExpense) * 100) : 0,
-      percentText: totalExpense > 0 ? (c.amount / totalExpense * 100).toFixed(1) : '0.0',
-      color: CATEGORY_COLORS[i % CATEGORY_COLORS.length]
-    }))
-
-    // 收入分类统计
-    const incomeCategoryData = util.getIncomeByCategory(records, currentMonth)
-    const totalIncome = incomeCategoryData.reduce((s, c) => s + c.amount, 0)
-    const incomeCategoryStats = incomeCategoryData.map((c, i) => ({
-      ...c,
-      amountFormatted: util.formatAmount(c.amount),
-      percent: totalIncome > 0 ? Math.round((c.amount / totalIncome) * 100) : 0,
-      percentText: totalIncome > 0 ? (c.amount / totalIncome * 100).toFixed(1) : '0.0',
-      color: CATEGORY_COLORS[i % CATEGORY_COLORS.length]
-    }))
-
-    // 趋势数据（近6个月）
-    const trendData = this.calcTrend(records, currentMonth)
-
-    // 计算图表刻度线
-    const maxVal = Math.max(...trendData.map(d => Math.max(d.income, d.expense)), 1)
-    const step = this.calcStep(maxVal)
-    const chartLineLabels = []
-    for (let i = 0; i <= 4; i++) {
-      chartLineLabels.push(this.formatShortAmount(step * i))
+      if (r.type === 'income') {
+        income += amount
+        const cat = r.category || 'other_income'
+        incomeByCategory[cat] = (incomeByCategory[cat] || 0) + amount
+        if (r.linkedRecordId) linkedRefundAmount += amount
+      } else {
+        expense += amount
+        const cat = r.category || 'other_expense'
+        expenseByCategory[cat] = (expenseByCategory[cat] || 0) + amount
+        if (r.reimbursementStatus === 'pending') {
+          pendingCount++
+          pendingAmount += amount
+        } else if (r.reimbursementStatus === 'reimbursed') {
+          reimbursedCount++
+          reimbursedAmount += amount
+        }
+      }
     }
 
-    // 账户统计
-    const accounts = storage.getAccounts()
-    const accountStats = util.getAccountStats(records, accounts, currentMonth)
+    // 消费占比
+    const expenseRatio = income > 0 ? Math.round((expense / income) * 100) : 0
 
-    // 退款/报销统计
-    const refundStats = util.getRefundStats(records, currentMonth)
+    // 格式化支出分类统计
+    const totalExpense = Object.values(expenseByCategory).reduce((s, v) => s + v, 0)
+    const categoryStats = Object.entries(expenseByCategory)
+      .map(([catId, amount], i) => {
+        const catInfo = EXPENSE_CATEGORIES.find(c => c.id === catId) || { id: catId, name: catId, icon: '📌' }
+        return {
+          ...catInfo,
+          amount,
+          amountFormatted: util.formatAmount(amount),
+          percent: totalExpense > 0 ? Math.round((amount / totalExpense) * 100) : 0,
+          percentText: totalExpense > 0 ? (amount / totalExpense * 100).toFixed(1) : '0.0',
+          color: CATEGORY_COLORS[i % CATEGORY_COLORS.length]
+        }
+      })
+      .sort((a, b) => b.amount - a.amount)
 
+    // 格式化收入分类统计
+    const totalIncome = Object.values(incomeByCategory).reduce((s, v) => s + v, 0)
+    const incomeCategoryStats = Object.entries(incomeByCategory)
+      .map(([catId, amount], i) => {
+        const catInfo = INCOME_CATEGORIES.find(c => c.id === catId) || { id: catId, name: catId, icon: '📌' }
+        return {
+          ...catInfo,
+          amount,
+          amountFormatted: util.formatAmount(amount),
+          percent: totalIncome > 0 ? Math.round((amount / totalIncome) * 100) : 0,
+          percentText: totalIncome > 0 ? (amount / totalIncome * 100).toFixed(1) : '0.0',
+          color: CATEGORY_COLORS[i % CATEGORY_COLORS.length]
+        }
+      })
+      .sort((a, b) => b.amount - a.amount)
+
+    // 第一批 setData：核心统计数据
     this.setData({
       stats: {
-        income: stats.income,
-        expense: stats.expense,
-        incomeFormatted: util.formatAmount(stats.income),
-        expenseFormatted: util.formatAmount(stats.expense),
-        balanceFormatted: util.formatAmount(Math.abs(stats.balance)),
-        balance: stats.balance
+        income,
+        expense,
+        incomeFormatted: util.formatAmount(income),
+        expenseFormatted: util.formatAmount(expense),
+        balanceFormatted: util.formatAmount(Math.abs(income - expense)),
+        balance: income - expense
       },
-      recordCount: monthRecords.length,
+      recordCount,
       expenseRatio,
       expenseRatioText: String(expenseRatio),
       categoryStats,
       incomeCategoryStats,
-      trendData,
-      chartLineLabels,
-      accountStats,
-      refundStats
+      refundStats: {
+        pendingAmount,
+        reimbursedAmount,
+        pendingCount,
+        reimbursedCount,
+        linkedRefundAmount,
+        pendingAmountFormatted: util.formatAmount(pendingAmount),
+        reimbursedAmountFormatted: util.formatAmount(reimbursedAmount),
+        linkedRefundAmountFormatted: util.formatAmount(linkedRefundAmount)
+      }
     })
+
+    // 第二批 setData：趋势数据（延迟执行，让第一帧先渲染）
+    setTimeout(() => {
+      const trendData = this.calcTrend(records, currentMonth)
+      const maxVal = Math.max(...trendData.map(d => Math.max(d.income, d.expense)), 1)
+      const step = this.calcStep(maxVal)
+      const chartLineLabels = []
+      for (let i = 0; i <= 4; i++) {
+        chartLineLabels.push(this.formatShortAmount(step * i))
+      }
+      this.setData({ trendData, chartLineLabels })
+    }, 50)
+
+    // 第三批 setData：账户统计（延迟执行）
+    setTimeout(() => {
+      const accounts = storage.getAccounts()
+      const accountStats = util.getAccountStats(records, accounts, currentMonth)
+      this.setData({ accountStats })
+    }, 100)
   },
 
   calcTrend(records, currentMonth) {

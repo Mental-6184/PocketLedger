@@ -10,13 +10,31 @@ function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).substr(2, 6)
 }
 
+// ==================== 内存缓存 ====================
+// 避免每次读取都访问 wx.getStorageSync
+
+const _cache = {
+  records: null,
+  subscriptions: null,
+  accounts: null,
+  settings: null
+}
+
+function _invalidateCache(key) {
+  _cache[key] = null
+}
+
 // ==================== 记账记录 ====================
 
 function getRecords() {
-  return wx.getStorageSync(STORAGE_KEYS.RECORDS) || []
+  if (_cache.records === null) {
+    _cache.records = wx.getStorageSync(STORAGE_KEYS.RECORDS) || []
+  }
+  return _cache.records
 }
 
 function saveRecords(records) {
+  _cache.records = records
   wx.setStorageSync(STORAGE_KEYS.RECORDS, records)
 }
 
@@ -50,10 +68,14 @@ function deleteRecord(id) {
 // ==================== 订阅项目 ====================
 
 function getSubscriptions() {
-  return wx.getStorageSync(STORAGE_KEYS.SUBSCRIPTIONS) || []
+  if (_cache.subscriptions === null) {
+    _cache.subscriptions = wx.getStorageSync(STORAGE_KEYS.SUBSCRIPTIONS) || []
+  }
+  return _cache.subscriptions
 }
 
 function saveSubscriptions(subs) {
+  _cache.subscriptions = subs
   wx.setStorageSync(STORAGE_KEYS.SUBSCRIPTIONS, subs)
 }
 
@@ -87,17 +109,21 @@ function deleteSubscription(id) {
 // ==================== 账户 ====================
 
 function getAccounts() {
-  let accounts = wx.getStorageSync(STORAGE_KEYS.ACCOUNTS)
-  if (!accounts || accounts.length === 0) {
-    // 首次使用，初始化默认账户
-    const { DEFAULT_ACCOUNTS } = require('./constants')
-    accounts = DEFAULT_ACCOUNTS.map(a => ({ ...a, createdAt: Date.now() }))
-    saveAccounts(accounts)
+  if (_cache.accounts === null) {
+    let accounts = wx.getStorageSync(STORAGE_KEYS.ACCOUNTS)
+    if (!accounts || accounts.length === 0) {
+      // 首次使用，初始化默认账户
+      const { DEFAULT_ACCOUNTS } = require('./constants')
+      accounts = DEFAULT_ACCOUNTS.map(a => ({ ...a, createdAt: Date.now() }))
+      saveAccounts(accounts)
+    }
+    _cache.accounts = accounts
   }
-  return accounts
+  return _cache.accounts
 }
 
 function saveAccounts(accounts) {
+  _cache.accounts = accounts
   wx.setStorageSync(STORAGE_KEYS.ACCOUNTS, accounts)
 }
 
@@ -157,11 +183,15 @@ function deleteAccount(id) {
 // ==================== 设置 ====================
 
 function getSettings() {
-  const settings = wx.getStorageSync(STORAGE_KEYS.SETTINGS)
-  return { ...DEFAULT_SETTINGS, ...settings }
+  if (_cache.settings === null) {
+    const settings = wx.getStorageSync(STORAGE_KEYS.SETTINGS)
+    _cache.settings = { ...DEFAULT_SETTINGS, ...settings }
+  }
+  return _cache.settings
 }
 
 function saveSettings(settings) {
+  _cache.settings = settings
   wx.setStorageSync(STORAGE_KEYS.SETTINGS, settings)
 }
 
@@ -257,6 +287,11 @@ function clearAllData() {
   wx.removeStorageSync(STORAGE_KEYS.SUBSCRIPTIONS)
   wx.removeStorageSync(STORAGE_KEYS.ACCOUNTS)
   wx.removeStorageSync(STORAGE_KEYS.SETTINGS)
+  // 清空所有缓存
+  _cache.records = null
+  _cache.subscriptions = null
+  _cache.accounts = null
+  _cache.settings = null
 }
 
 // ==================== 账户余额同步 ====================

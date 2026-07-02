@@ -51,6 +51,9 @@ Page({
     this.checkFirstLaunch()
   },
 
+  // 缓存订阅数据，避免重复读取
+  _cachedSubs: null,
+
   // 检查是否首次启动，引导阅读使用方法
   checkFirstLaunch() {
     const app = getApp()
@@ -79,80 +82,116 @@ Page({
     const subs = storage.getSubscriptions()
     const currentMonth = util.getCurrentMonth()
 
-    // 月度统计
-    const stats = util.getMonthStats(records, currentMonth)
+    // 缓存订阅数据
+    this._cachedSubs = subs
+
+    // 单次遍历 records，收集月度统计 + 最近记录 + 常用分类 + 待报销统计
+    let income = 0, expense = 0
+    const recentRecords = []
+    const categoryCount = {}
+    let pendingCount = 0, pendingAmount = 0
+    const thirtyDaysAgo = new Date()
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+    const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split('T')[0]
+
+    for (let i = 0; i < records.length; i++) {
+      const r = records[i]
+      if (!r || !r.date) continue
+
+      // 月度统计 + 待报销
+      if (r.date.startsWith(currentMonth)) {
+        const amount = parseFloat(r.amount) || 0
+        if (r.type === 'income') {
+          income += amount
+        } else {
+          expense += amount
+          if (r.reimbursementStatus === 'pending') {
+            pendingCount++
+            pendingAmount += amount
+          }
+        }
+      }
+
+      // 最近 3 条记录
+      if (i < 3) {
+        const catInfo = util.getCategoryInfo(r.category, r.type)
+        recentRecords.push({
+          ...r,
+          amountFormatted: util.formatAmount(r.amount),
+          categoryName: catInfo.name,
+          categoryIcon: catInfo.icon,
+          dateFormatted: util.formatDateCN(r.date)
+        })
+      }
+
+      // 常用分类统计（最近30天）
+      if (r.date >= thirtyDaysAgoStr && r.type === 'expense') {
+        categoryCount[r.category] = (categoryCount[r.category] || 0) + 1
+      }
+    }
 
     // 预算
     const budget = settings.monthlyBudget || 0
-    const budgetPercent = budget > 0 ? Math.round((stats.expense / budget) * 100) : 0
+    const budgetPercent = budget > 0 ? Math.round((expense / budget) * 100) : 0
 
-    // 最近 3 条记录
-    const recentRecords = records.slice(0, 3).map(r => {
-      const catInfo = util.getCategoryInfo(r.category, r.type)
-      return {
-        ...r,
-        amountFormatted: util.formatAmount(r.amount),
-        categoryName: catInfo.name,
-        categoryIcon: catInfo.icon,
-        dateFormatted: util.formatDateCN(r.date)
-      }
-    })
-
-    // 即将到期的订阅
+    // 即将到期的订阅（单次遍历）
     const today = util.getToday()
-    const expiringSubs = subs
-      .filter(s => s.enabled)
-      .map(s => {
-        const subCurrency = s.currency || 'CNY'
-        return {
-          ...s,
-          amountFormatted: util.formatAmount(s.amount),
-          nextDateFormatted: util.formatDateCN(s.nextDate),
-          daysLeft: util.daysBetween(today, s.nextDate),
-          currencySymbol: util.getCurrencySymbol(subCurrency),
-          showConversion: subCurrency !== 'CNY'
-        }
-      })
-      .filter(s => s.daysLeft <= (s.remindDays || 3))
-      .sort((a, b) => a.daysLeft - b.daysLeft)
-
-    // 订阅概览统计（使用汇率换算 + 年付分摊后的人民币月均）
     const rates = exchange.getRatesSync()
     let monthlyTotal = 0
-    const activeSubs = subs
-      .filter(s => s.enabled)
-      .map(s => {
-        monthlyTotal += util.calcEffectiveMonthlyCost(s, rates)
-        const subCurrency = s.currency || 'CNY'
-        return {
-          ...s,
-          amountFormatted: util.formatAmount(s.amount),
-          cycleName: util.getCycleName(s.cycleId || s.cycle),
-          currencySymbol: util.getCurrencySymbol(subCurrency),
-          showConversion: subCurrency !== 'CNY'
-        }
+    const expiringSubs = []
+    const activeSubs = []
+
+    for (let i = 0; i < subs.length; i++) {
+      const s = subs[i]
+      if (!s.enabled) continue
+
+      // 订阅概览统计
+      monthlyTotal += util.calcEffectiveMonthlyCost(s, rates)
+      const subCurrency = s.currency || 'CNY'
+      const currencySymbol = util.getCurrencySymbol(subCurrency)
+      const showConversion = subCurrency !== 'CNY'
+      const amountFormatted = util.formatAmount(s.amount)
+
+      activeSubs.push({
+        ...s,
+        amountFormatted,
+        cycleName: util.getCycleName(s.cycleId || s.cycle),
+        currencySymbol,
+        showConversion
       })
+
+      // 即将到期
+      const daysLeft = util.daysBetween(today, s.nextDate)
+      if (daysLeft <= (s.remindDays || 3)) {
+        expiringSubs.push({
+          ...s,
+          amountFormatted,
+          nextDateFormatted: util.formatDateCN(s.nextDate),
+          daysLeft,
+          currencySymbol,
+          showConversion
+        })
+      }
+    }
+    expiringSubs.sort((a, b) => a.daysLeft - b.daysLeft)
 
     // 账户列表
     const accounts = storage.getAccounts()
 
-    // 计算常用分类（最近30天使用频率最高的4个）
-    const quickCategories = this.getQuickCategories(records)
+    // 常用分类（取前4个）
+    const quickCategories = this.getQuickCategoriesFromCount(categoryCount)
 
     // 计算预算相关（含订阅预留）
     const subscriptionReserved = monthlyTotal
-    const availableBudget = budget > 0 ? budget - stats.expense - subscriptionReserved : 0
-    const budgetWithSub = budget > 0 ? Math.round(((stats.expense + subscriptionReserved) / budget) * 100) : 0
-
-    // 待报销统计
-    const refundStats = util.getRefundStats(records, currentMonth)
+    const availableBudget = budget > 0 ? budget - expense - subscriptionReserved : 0
+    const budgetWithSub = budget > 0 ? Math.round(((expense + subscriptionReserved) / budget) * 100) : 0
 
     this.setData({
       currentMonthCN: util.formatMonthCN(currentMonth),
-      incomeFormatted: util.formatAmount(stats.income),
-      expenseFormatted: util.formatAmount(stats.expense),
-      balanceFormatted: util.formatAmount(Math.abs(stats.balance)),
-      balance: stats.balance,
+      incomeFormatted: util.formatAmount(income),
+      expenseFormatted: util.formatAmount(expense),
+      balanceFormatted: util.formatAmount(Math.abs(income - expense)),
+      balance: income - expense,
       budget,
       budgetFormatted: util.formatAmount(budget),
       budgetPercent,
@@ -170,8 +209,8 @@ Page({
       availableBudgetPositive: availableBudget >= 0,
       budgetWithSub: budgetWithSub > 100 ? 100 : budgetWithSub,
       showBudgetDetail: budget > 0 && subscriptionReserved > 0,
-      pendingReimburseCount: refundStats.pendingCount,
-      pendingReimburseAmount: refundStats.pendingAmountFormatted
+      pendingReimburseCount: pendingCount,
+      pendingReimburseAmount: util.formatAmount(pendingAmount)
     })
 
     // 构建扣款日历
@@ -181,20 +220,8 @@ Page({
     exchange.getRates().catch(() => {})
   },
 
-  // 获取常用分类
-  getQuickCategories(records) {
-    const thirtyDaysAgo = new Date()
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
-    const dateStr = thirtyDaysAgo.toISOString().split('T')[0]
-
-    // 统计最近30天各分类使用次数
-    const categoryCount = {}
-    records.forEach(r => {
-      if (r.date >= dateStr && r.type === 'expense') {
-        categoryCount[r.category] = (categoryCount[r.category] || 0) + 1
-      }
-    })
-
+  // 获取常用分类（从已统计的 categoryCount 中取前4个）
+  getQuickCategoriesFromCount(categoryCount) {
     // 排序取前4个
     const sorted = Object.entries(categoryCount)
       .sort((a, b) => b[1] - a[1])
@@ -385,8 +412,8 @@ Page({
       calendarYear--
     }
     this.setData({ calendarYear, calendarMonth })
-    const subs = storage.getSubscriptions()
-    this.buildCalendar(subs)
+    // 使用缓存的订阅数据，避免重复读取
+    this.buildCalendar(this._cachedSubs || storage.getSubscriptions())
   },
 
   /**
@@ -400,8 +427,8 @@ Page({
       calendarYear++
     }
     this.setData({ calendarYear, calendarMonth })
-    const subs = storage.getSubscriptions()
-    this.buildCalendar(subs)
+    // 使用缓存的订阅数据，避免重复读取
+    this.buildCalendar(this._cachedSubs || storage.getSubscriptions())
   },
 
   /**
