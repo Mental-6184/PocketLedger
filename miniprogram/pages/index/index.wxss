@@ -179,6 +179,83 @@
   border-radius: var(--radius-xl);
 }
 
+/* 快捷记账-账户选择弹窗 */
+.account-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.account-modal {
+  width: 100%;
+  background: #fff;
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 32rpx;
+  padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
+  max-height: 60vh;
+  animation: slideUp 0.3s ease-out;
+}
+
+.account-modal-header {
+  text-align: center;
+  margin-bottom: 24rpx;
+}
+
+.account-modal-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.account-list {
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.account-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 16rpx;
+  border-radius: var(--radius-md);
+  transition: background-color 0.15s ease;
+}
+
+.account-option:active {
+  background: var(--color-bg);
+}
+
+.account-option.active {
+  background: rgba(42, 161, 152, 0.08);
+}
+
+.account-option-left {
+  align-items: center;
+}
+
+.account-option-icon {
+  font-size: 36rpx;
+  margin-right: 16rpx;
+}
+
+.account-option-name {
+  font-size: 28rpx;
+  color: var(--color-text);
+}
+
+.account-option-check {
+  font-size: 28rpx;
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
 /* 概览卡片渐变背景动画 */
 .overview-card {
   animation: fadeInUp 0.35s ease-out both;
@@ -699,4 +776,87 @@
   font-size: 26rpx;
   color: var(--color-primary);
   font-weight: 500;
+}
+
+/* 设置箭头 */
+.setting-arrow {
+  font-size: 28rpx;
+  color: var(--color-text-light);
+}
+
+/* 账户选择弹窗 */
+.account-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.account-modal {
+  width: 100%;
+  background: #fff;
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 32rpx;
+  padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
+  max-height: 60vh;
+  animation: slideUp 0.3s ease-out;
+}
+
+.account-modal-header {
+  text-align: center;
+  margin-bottom: 24rpx;
+}
+
+.account-modal-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.account-list {
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.account-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 16rpx;
+  border-radius: var(--radius-md);
+  transition: background-color 0.15s ease;
+}
+
+.account-option:active {
+  background: var(--color-bg);
+}
+
+.account-option.active {
+  background: rgba(42, 161, 152, 0.08);
+}
+
+.account-option-left {
+  align-items: center;
+}
+
+.account-option-icon {
+  font-size: 36rpx;
+  margin-right: 16rpx;
+}
+
+.account-option-name {
+  font-size: 28rpx;
+  color: var(--color-text);
+}
+
+.account-option-check {
+  font-size: 28rpx;
+  color: var(--color-primary);
+  font-weight: 700;
 }
