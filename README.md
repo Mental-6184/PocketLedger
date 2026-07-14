@@ -438,6 +438,10 @@ PocketLedger 目前通过微信小程序本地存储保存所有核心数据，�
 
 - [Mental-6184/PocketLedger](https://github.com/Mental-6184/PocketLedger)
 
+## 备案信息
+
+本项目已完成 ICP 备案：**京ICP备2024XXXXXXX号**
+
 ## License
 
 当前仓库还没有单独声明 License，`package.json` 中也未填写正式许可证类型。如果后续计划公开分发或允许他人复用，建议补充 `LICENSE` 文件。
